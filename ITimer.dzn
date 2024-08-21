@@ -1,0 +1,17 @@
+import Types.dzn;
+
+interface ITimer
+{
+    in void setTimer(Delay delayInS);
+    in void cancelTimer();
+    out void timerElapsed();
+ 
+    behavior {
+        enum State  { IDLE, ARMED };
+        State state = State.IDLE;
+
+        [ state.IDLE ] on setTimer: state = State.ARMED;
+        [ state.ARMED ] on cancelTimer: state = State.IDLE;
+        [ state.ARMED ] on inevitable:  { timerElapsed; state = State.IDLE; }
+    }
+}

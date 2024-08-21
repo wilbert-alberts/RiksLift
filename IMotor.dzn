@@ -1,0 +1,12 @@
+interface IMotor
+{
+    in void moveUpFast();
+    in void moveUpSlow();
+    in void moveDownFast();
+    in void moveDownSlow();
+    in void stop();
+
+    behavior {
+        [ true ] on moveUpFast, moveUpSlow, moveDownFast, moveDownSlow, stop: {} 
+    }
+}

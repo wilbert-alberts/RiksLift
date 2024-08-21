@@ -1,0 +1,22 @@
+import Types.dzn;
+
+interface IPlanner
+{
+    in void getMoveUpFastDelay(Delay d);
+    in void getMoveUpFastPosition(Position p);
+    in void getMoveDownFastDelay(Delay d);
+    in void getMoveDownFastPosition(Position p);
+    in  void setEndstopUpPosition(Position p);
+    in  void setEndstopDownPosition(Position p);
+
+
+    behavior {
+         [ true ] on 
+            getMoveUpFastDelay, 
+            getMoveUpFastPosition, 
+            getMoveDownFastDelay, 
+            getMoveDownFastPosition, 
+            setEndstopDownPosition, 
+            setEndstopUpPosition: {}
+    }
+}

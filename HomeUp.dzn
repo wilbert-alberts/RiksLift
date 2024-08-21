@@ -1,0 +1,91 @@
+import ITimer.dzn;
+import IMotor.dzn;
+import IDestinationSensor.dzn;
+import IPlanner.dzn;
+import IMoveUp.dzn;
+import IEndstop.dzn;
+
+component HomeUp {
+    provides IMoveUp p;
+    requires ITimer rTimer;
+    requires IEndstop rEndstop;
+    requires IMotor rMotor;
+    requires IDestinationSensor rPositionSensor;
+    requires IPlanner rPlanner;
+
+    behavior {
+        enum State { IDLE, MOVING_FAST_UP, STOPPING_FAST_UP, MOVING_SLOW_DOWN, STOPPING_SLOW_DOWN, MOVING_SLOW_UP, ABORTING };
+        State state = State.IDLE;
+        Delay delay;
+        Position position;
+        IEndstop.State es = IEndstop.State.UNKNOWN;
+
+        [ state.IDLE ] on p.moveUp(): { 
+            es = rEndstop.getState();
+            if (es == IEndstop.State.INSIDE) {
+                rMotor.moveDownSlow();
+                state = State.MOVING_SLOW_DOWN;                    
+            }
+            else if (es == IEndstop.State.OUTSIDE) {
+                rMotor.moveUpFast();
+                state = State.MOVING_FAST_UP;                    
+            }
+        }
+        [ state.MOVING_FAST_UP ] on rEndstop.entering(): {
+            rMotor.stop();
+            rTimer.setTimer($1.0$);
+            state = State.STOPPING_FAST_UP;
+        }
+        [ state.STOPPING_FAST_UP ] on rTimer.timerElapsed(): {
+            rMotor.moveDownSlow();
+            state = State.MOVING_SLOW_DOWN;
+        }
+        [ state.MOVING_SLOW_DOWN ] on rEndstop.exiting(): {
+            rTimer.setTimer($0.5$);
+            state = State.STOPPING_SLOW_DOWN;
+        }
+        [ state.STOPPING_SLOW_DOWN ] on rTimer.timerElapsed(): {
+            rMotor.stop();
+            rMotor.moveUpSlow();
+            state = State.MOVING_SLOW_UP;
+        }
+        [ state.MOVING_SLOW_UP ] on rEndstop.entering(): {
+            rMotor.stop();
+            rPositionSensor.getPosition(position);
+            rPlanner.setEndstopUpPosition(position);
+            p.moveFinished();
+            state = State.IDLE;
+        }
+
+        [ state.MOVING_FAST_UP || state.MOVING_SLOW_DOWN || state.MOVING_SLOW_UP ] on p.abort(): {
+            rMotor.stop();
+            rTimer.setTimer($1.0$);
+            state = State.ABORTING;
+        }
+       [ state.STOPPING_FAST_UP || state.STOPPING_SLOW_DOWN ] on p.abort(): {
+            state = State.ABORTING;
+        }
+
+        [state.ABORTING] on rTimer.timerElapsed(): {
+            p.moveAborted();
+            state = State.IDLE;
+        }
+        [state.ABORTING] on rEndstop.entering(), rEndstop.exiting() : {
+        }
+ 
+        [ state.STOPPING_SLOW_DOWN || 
+          state.STOPPING_FAST_UP || 
+          state.MOVING_SLOW_DOWN ||
+          state.IDLE 
+        ] on rEndstop.entering(): {
+            /* Should not happen */ 
+        }
+        [ state.IDLE || 
+          state.STOPPING_FAST_UP || 
+          state.STOPPING_SLOW_DOWN ||
+          state.MOVING_SLOW_UP
+        ]  on rEndstop.exiting(): {
+            /* Should not happen */ 
+        }
+   }
+}

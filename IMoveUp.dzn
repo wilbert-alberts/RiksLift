@@ -1,0 +1,23 @@
+import ITimer.dzn;
+import IMotor.dzn;
+import IDestinationSensor.dzn;
+import IPlanner.dzn;
+
+interface IMoveUp 
+{
+    in void moveUp();
+    in void abort();
+    out void moveFinished();
+    out void moveAborted();
+
+    behavior {
+        enum State { IDLE, MOVING,  ABORTING };
+        State state = State.IDLE;
+
+        [ state.IDLE ] on moveUp: { state = State.MOVING; }
+        [ state.MOVING] on abort: { state = State.ABORTING; }
+        [ state.MOVING ] on inevitable: { moveFinished; state = State.IDLE; }
+        [ state.ABORTING ] on inevitable: { moveAborted; state = State.IDLE; }
+    }
+}
+

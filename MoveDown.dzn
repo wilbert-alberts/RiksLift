@@ -1,0 +1,61 @@
+import IMoveDown.dzn;
+import ITimer.dzn;
+import IDestinationSensor.dzn;
+import IMotor.dzn;
+import IPlanner.dzn;
+
+component MoveDown {
+    provides IMoveDown p;
+    requires ITimer rTimer;
+    requires IDestinationSensor rPositionSensor;
+    requires IMotor rMotor;
+    requires IPlanner rPlanner;
+
+    behavior {
+        enum State { IDLE, MOVING_FAST, MOVING_SLOW, STOPPING,  ABORTING };
+        State state = State.IDLE;
+        Delay delay;
+        Position position;
+
+        [ state.IDLE ] on p.moveDown(): { 
+            rPlanner.getMoveDownFastDelay(delay);
+            rPlanner.getMoveDownFastPosition(position);
+            rTimer.setTimer(delay);
+            rMotor.moveDownFast();
+            state = State.MOVING_FAST;
+        }
+        [ state.MOVING_FAST ] on rTimer.timerElapsed(): { 
+            rPositionSensor.setDestination(position); 
+            rMotor.moveDownSlow();
+            state = State.MOVING_SLOW;
+        }
+        [ state.MOVING_FAST ] on p.abort(): {
+            rTimer.cancelTimer();
+            rMotor.stop();
+            rTimer.setTimer($0.5$);
+            state = State.ABORTING;
+        }
+        [ state.MOVING_SLOW ] on rPositionSensor.destinationReached(): {
+            rMotor.stop();
+            rTimer.setTimer($0.5$);
+            state = State.STOPPING;
+        }
+        [ state.MOVING_SLOW ] on p.abort(): {
+            rPositionSensor.cancelDestination();
+            rMotor.stop();
+            rTimer.setTimer($0.5$);
+            state = State.ABORTING;
+        }
+        [ state.STOPPING ] on rTimer.timerElapsed():  {
+            p.moveFinished();
+            state = State.IDLE;
+        }
+        [ state.STOPPING ] on p.abort():  {
+            state = State.ABORTING;
+        }
+        [ state.ABORTING ] on rTimer.timerElapsed():  {
+            p.moveAborted();
+            state = State.IDLE;
+        }
+    }
+}

@@ -1,0 +1,24 @@
+
+interface IEndstop
+{
+    enum State { UNKNOWN, INSIDE, INSIDE_EXPECTING, OUTSIDE, OUTSIDE_EXPECTING };
+
+    out void entering();
+    out void exiting();
+
+    in State getState();
+
+    behavior {
+        State state = State.UNKNOWN;
+
+        [ state.UNKNOWN] on getState: { state = State.INSIDE; reply(state); }
+        [ state.UNKNOWN] on getState: { state = State.OUTSIDE; reply(state); }
+
+        [ state.INSIDE ] on getState: { reply(state); }
+        [ state.INSIDE ] on inevitable: { exiting; state = State.OUTSIDE; }
+        
+        [ state.OUTSIDE ] on getState: { reply(state); }
+        [ state.OUTSIDE ] on inevitable: { entering; state = State.INSIDE; }
+        
+    }
+}
