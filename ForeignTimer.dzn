@@ -1,0 +1,4 @@
+
+component FTimer {
+    provides ITimer p;
+}

@@ -1,0 +1,28 @@
+import IMoveUpDown.dzn;
+import IMoveUp.dzn;
+import IMoveDown.dzn;
+
+component MoveUpDown {
+    provides IMoveUpDown p;
+    requires IMoveUp rUp;
+    requires IMoveDown rDown;
+
+    behavior {
+        enum State { IDLE, MOVING_UP, UP, MOVING_DOWN, DOWN, ABORTING };
+        State state = State.IDLE;
+
+        [ state.IDLE ] on p.moveUp(): { rUp.moveUp(); state = State.MOVING_UP; }
+        [ state.IDLE ] on p.moveDown(): { rDown.moveDown(); state = State.MOVING_DOWN; }
+        
+        [ state.MOVING_UP ] on rUp.moveFinished(): { p.moveFinished(); state = State.UP; }
+        [ state.MOVING_UP ] on p.abort(): { rUp.abort(); state = State.ABORTING; }
+
+        [ state.MOVING_DOWN ] on rDown.moveFinished(): { p.moveFinished(); state = State.DOWN; }
+        [ state.MOVING_DOWN ] on p.abort(): { rDown.abort(); state = State.ABORTING; }
+
+        [ state.DOWN ] on p.moveUp(): { rUp.moveUp(); state = State.MOVING_UP; }
+        [ state.UP ]   on p.moveDown(): { rDown.moveDown(); state = State.MOVING_DOWN; }
+        
+        [ state.ABORTING ] on rDown.moveAborted(), rUp.moveAborted(): { p.moveAborted(); state = State.IDLE; }
+    }
+}

@@ -1,0 +1,29 @@
+import Safety.dzn;
+import IntrusionDetection.dzn;
+import IIntrusionDetection.dzn;
+import ForeignIntrusionDetection.dzn;
+import ForeignLog.dzn;
+
+component SafetySystem
+{
+    provides IIntrusionDetection p;
+
+    system {
+        Safety safety;
+        IntrusionDetection idUp;
+        IntrusionDetection idDown;
+        
+        FIntrusionDetection foreignIdUp;
+        FLog logUp;
+        FIntrusionDetection foreignIdDown;
+        FLog logDown;
+        
+        safety.p <=> p;
+        safety.r1 <=> idUp.p;
+        safety.r2 <=> idDown.p;
+        idUp.r <=> foreignIdUp.p;
+        idUp.rl <=> logUp.p;
+        idDown.r <=> foreignIdDown.p;
+        idDown.rl <=> logDown.p;
+    }
+}

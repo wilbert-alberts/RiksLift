@@ -1,0 +1,14 @@
+interface IApplication 
+{
+    in void btnDownPressed();
+    in void btnUpPressed();
+
+    behavior {
+        enum Status { STARTED };
+        Status s = Status.STARTED;
+
+        [s.STARTED] on btnDownPressed: { }
+        [s.STARTED] on btnUpPressed: { }
+    }
+}
+

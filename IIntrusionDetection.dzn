@@ -1,0 +1,16 @@
+
+interface IIntrusionDetection
+{
+    out void triggered();
+    out void cleared();
+
+    behavior {
+        enum Status { UNKNOWN, SAFE, UNSAFE };
+        Status s = Status.UNKNOWN;
+
+        [ s.UNKNOWN] on inevitable: { triggered; s = Status.UNSAFE; }
+        [ s.UNKNOWN] on inevitable: { cleared; s = Status.SAFE; }
+        [ s.SAFE ] on inevitable: { triggered; s = Status.UNSAFE; }
+        [ s.UNSAFE ] on inevitable: { cleared; s = Status.SAFE; }
+    }
+}

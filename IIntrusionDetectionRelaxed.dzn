@@ -1,0 +1,11 @@
+
+interface IIntrusionDetectionRelaxed
+{
+    out void triggered();
+    out void cleared();
+
+    behavior {
+        on inevitable: { triggered; }
+        on inevitable: { cleared;  }
+    }
+}

@@ -1,0 +1,46 @@
+import IIntrusionDetection.dzn;
+
+component Safety
+{
+    provides IIntrusionDetection p; 
+    requires IIntrusionDetection r1;
+    requires IIntrusionDetection r2;
+
+    behavior {
+        enum Status { X_X, X_U, X_S, U_X, U_U, U_S, S_X, S_U, S_S };
+        Status s = Status.X_X;
+
+        [ s.X_X ] on r1.triggered(): { p.triggered(); s = Status.U_X; }
+        [ s.X_X ] on r2.triggered(): { p.triggered(); s = Status.X_U; }
+        [ s.X_X ] on r1.cleared(): {  s = Status.S_X; }
+        [ s.X_X ] on r2.cleared(): {  s = Status.X_S; }
+
+        [ s.U_X ] on r2.triggered(): { s = Status.U_U; }
+        [ s.U_X ] on r1.cleared(): {  s = Status.S_X; }
+        [ s.U_X ] on r2.cleared(): {  s = Status.U_S; }
+
+        [ s.X_U ] on r1.triggered(): { s = Status.U_U; }
+        [ s.X_U ] on r1.cleared(): {  s = Status.S_U; }
+        [ s.X_U ] on r2.cleared(): {  s = Status.X_S; }
+
+        [ s.S_X ] on r1.triggered(): { s = Status.U_X; }
+        [ s.S_X ] on r2.triggered(): { s = Status.S_U; }
+        [ s.S_X ] on r2.cleared(): {  p.cleared(); s = Status.S_S; }
+
+        [ s.X_S ] on r1.triggered(): { s = Status.U_S; }
+        [ s.X_S ] on r2.triggered(): { s = Status.X_U; }
+        [ s.X_S ] on r1.cleared(): {  p.cleared(); s = Status.S_S; }
+        
+        [ s.U_S ] on r2.triggered(): { s = Status.U_U; }
+        [ s.U_S ] on r1.cleared(): {  p.cleared(); s = Status.S_S; }
+        
+        [ s.S_U ] on r1.triggered(): { s = Status.U_U; }
+        [ s.S_U ] on r2.cleared(): {  p.cleared(); s = Status.S_S; }
+        
+        [ s.U_U ] on r1.cleared(): { s = Status.S_U; }
+        [ s.U_U ] on r2.cleared(): { s = Status.U_S; }
+
+        [ s.S_S ] on r1.triggered(): { p.triggered(); s = Status.U_S; }
+        [ s.S_S ] on r2.triggered(): { p.triggered(); s = Status.S_U; }
+    }
+}

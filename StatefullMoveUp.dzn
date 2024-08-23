@@ -1,0 +1,24 @@
+import IMoveUp.dzn;
+
+component SMoveUp {
+    provides IMoveUp p;
+    requires IMoveUp homedMove;
+    requires IMoveUp regularMove;
+
+    behavior {
+        enum HomedState { NOT_HOMED, HOMED };
+        enum MoveState { IDLE, MOVING,  ABORTING };
+        HomedState homedState = HomedState.NOT_HOMED;
+        MoveState moveState = MoveState.IDLE;
+        
+        [ homedState.NOT_HOMED && moveState.IDLE ] on p.moveUp(): { homedMove.moveUp(); moveState = MoveState.MOVING; }
+        [ homedState.NOT_HOMED && moveState.MOVING] on p.abort(): { homedMove.abort(); moveState = MoveState.ABORTING; }
+        [ homedState.NOT_HOMED && moveState.MOVING ] on homedMove.moveFinished(): { p.moveFinished(); moveState = MoveState.IDLE; homedState = HomedState.HOMED; }
+        [ homedState.NOT_HOMED && moveState.ABORTING ] on homedMove.moveAborted(): { p.moveAborted(); moveState = MoveState.IDLE; }
+
+        [ homedState.HOMED && moveState.IDLE ] on p.moveUp(): { regularMove.moveUp(); moveState = MoveState.MOVING; }
+        [ homedState.HOMED && moveState.MOVING] on p.abort(): { regularMove.abort(); moveState = MoveState.ABORTING; }
+        [ homedState.HOMED && moveState.MOVING ] on regularMove.moveFinished(): { p.moveFinished(); moveState = MoveState.IDLE; }
+        [ homedState.HOMED && moveState.ABORTING ] on regularMove.moveAborted(): { p.moveAborted(); moveState = MoveState.IDLE; }
+    }
+}

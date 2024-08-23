@@ -1,0 +1,5 @@
+import IIntrusionDetectionRelaxed.dzn;
+
+component FIntrusionDetection {
+    provides IIntrusionDetectionRelaxed p;
+}

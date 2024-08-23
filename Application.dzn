@@ -1,0 +1,72 @@
+import IApplication.dzn;
+import IMoveUpDown.dzn;
+import IIntrusionDetection.dzn;
+
+component Application
+{
+    provides IApplication p;
+    requires IMoveUpDown         rLift;
+    requires IIntrusionDetection rSafety;
+
+    behavior {
+        enum Status { 
+            UNKNOWN,
+            UNKNOWN_SAFE,
+            UNKNOWN_UNSAFE,
+
+            MOVING_DOWN,
+            MOVING_UP,
+
+            DOWN_SAFE,
+            DOWN_UNSAFE,
+            UP_SAFE,
+            UP_UNSAFE,
+
+            ABORTING_UNSAFE,
+            ABORTING_SAFE
+            } ;
+        Status s = Status.UNKNOWN;
+
+        [ s.UNKNOWN] on rSafety.triggered(): { s = Status.UNKNOWN_UNSAFE; }
+        [ s.UNKNOWN] on rSafety.cleared(): { s = Status.UNKNOWN_SAFE; }
+        [ s.UNKNOWN] on p.btnDownPressed(): { s = Status.UNKNOWN; }
+        [ s.UNKNOWN] on p.btnUpPressed(): { s = Status.UNKNOWN; }
+
+        [ s.UNKNOWN_SAFE] on rSafety.triggered(): { s = Status.UNKNOWN_UNSAFE; }
+        [ s.UNKNOWN_SAFE] on p.btnDownPressed(): { rLift.moveDown(); s = Status.MOVING_DOWN; }
+        [ s.UNKNOWN_SAFE] on p.btnUpPressed(): { rLift.moveUp(); s = Status.MOVING_UP; }
+        
+        [ s.UNKNOWN_UNSAFE] on rSafety.cleared(): { s = Status.UNKNOWN_SAFE; }
+        [ s.UNKNOWN_UNSAFE] on p.btnDownPressed(), p.btnUpPressed(): { /* ignore buttons while state is unknown */ }
+        
+        [ s.MOVING_DOWN] on rLift.moveFinished(): { s = Status.DOWN_SAFE; }
+        [ s.MOVING_DOWN] on p.btnDownPressed(), p.btnUpPressed(): { /* ignore buttons while lift is moving */ }
+        [ s.MOVING_DOWN] on rSafety.triggered(): { rLift.abort(); s = Status.ABORTING_UNSAFE; }
+
+        [ s.MOVING_UP] on rLift.moveFinished(): { s = Status.UP_SAFE; }
+        [ s.MOVING_UP] on p.btnDownPressed(), p.btnUpPressed(): { /* ignore buttons while lift is moving */ }
+        [ s.MOVING_UP] on rSafety.triggered(): { rLift.abort(); s = Status.ABORTING_UNSAFE; }
+
+        [ s.DOWN_SAFE ] on p.btnDownPressed(): { rLift.moveUp(); s = Status.MOVING_UP;}
+        [ s.DOWN_SAFE ] on p.btnUpPressed(): { rLift.moveUp(); s = Status.MOVING_UP;}
+        [ s.DOWN_SAFE ] on rSafety.triggered(): { s = Status.DOWN_UNSAFE; }
+        
+        [ s.DOWN_UNSAFE ] on p.btnDownPressed(),p.btnUpPressed(): { /* ignore buttons while unsafe */}
+        [ s.DOWN_UNSAFE ] on rSafety.cleared(): { s = Status.DOWN_SAFE; }
+        
+        [ s.UP_SAFE ] on p.btnDownPressed(): { rLift.moveDown(); s = Status.MOVING_DOWN;}
+        [ s.UP_SAFE ] on p.btnUpPressed(): {  rLift.moveDown(); s = Status.MOVING_DOWN;}
+        [ s.UP_SAFE ] on rSafety.triggered(): { s = Status.UP_UNSAFE; }
+        
+        [ s.UP_UNSAFE ] on p.btnDownPressed(), p.btnUpPressed(): { /* ignore buttons while unsafe */}
+        [ s.UP_UNSAFE ] on rSafety.cleared(): { s = Status.UP_SAFE; }       
+
+        [s.ABORTING_UNSAFE ] on rLift.moveAborted(): { s = Status.UNKNOWN_UNSAFE; }
+        [s.ABORTING_UNSAFE ] on p.btnDownPressed(), p.btnUpPressed(): { /* ignore buttons while aborting */}
+        [s.ABORTING_UNSAFE ] on rSafety.cleared(): { s = Status.ABORTING_SAFE; }
+
+        [s.ABORTING_SAFE ] on rLift.moveAborted(): { s = Status.UNKNOWN_SAFE; }
+        [s.ABORTING_SAFE ] on p.btnDownPressed(), p.btnUpPressed(): { /* ignore buttons while aborting */}
+        [s.ABORTING_SAFE ] on rSafety.triggered(): { s = Status.ABORTING_UNSAFE; }
+   }
+}

@@ -1,0 +1,73 @@
+import MoveUp.dzn;
+import StatefullMoveUp.dzn;
+import HomeUp.dzn;
+import MoveDown.dzn;
+import StatefullMoveDown.dzn;
+import HomeDown.dzn;
+import IMoveUpDown.dzn;
+import MoveUpDown.dzn;
+import ForeignTimer.dzn;
+
+component LiftSystem
+{
+    provides IMoveUpDown p;
+    requires IPlanner rPlanner;
+    requires IEndstop rEndstopUp;
+    requires IEndstop rEndstopDown;
+    requires FTimer rHuTimer;
+    requires FTimer rHdTimer;
+    requires FTimer rRuTimer;
+    requires FTimer rRdTimer;
+    requires IDestinationSensor rHuPositionSensor;
+    requires IDestinationSensor rHdPositionSensor;
+    requires IDestinationSensor rRuPositionSensor;
+    requires IDestinationSensor rRdPositionSensor;
+    requires IMotor rHuMotor;
+    requires IMotor rRuMotor;
+    requires IMotor rHdMotor;
+    requires IMotor rRdMotor;
+
+    system {
+        MoveUpDown mud;
+        SMoveDown smd;
+        SMoveUp smu;
+        HomeDown hd;
+        MoveDown rd;
+        HomeUp hu;
+        MoveUp ru;
+
+        
+        mud.p <=> p;
+        mud.rDown <=> smd.p;
+        mud.rUp <=> smu.p;
+
+        smd.regularMove <=> rd.p;
+        smd.homedMove <=> hd.p;
+
+        smu.regularMove <=> ru.p;
+        smu.homedMove <=> hu.p;
+
+        hu.rPlanner <=> rPlanner;
+        hd.rPlanner <=> rPlanner;
+
+        hu.rEndstop <=> rEndstopUp;
+        hd.rEndstop <=> rEndstopDown;
+
+        hu.rTimer <=> rHuTimer;
+        ru.rTimer <=> rRuTimer;
+        hd.rTimer <=> rHdTimer;
+        rd.rTimer <=> rRdTimer;
+
+        hu.rMotor <=> rHuMotor;
+        hu.rPositionSensor <=> rHuPositionSensor;
+
+        ru.rMotor <=> rRuMotor;
+        ru.rPositionSensor <=> rRuPositionSensor;
+
+        hd.rMotor <=> rHdMotor;
+        hd.rPositionSensor <=> rHdPositionSensor;
+
+        rd.rMotor <=> rRdMotor;
+        rd.rPositionSensor <=> rRdPositionSensor;
+    }
+}

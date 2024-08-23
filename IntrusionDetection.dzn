@@ -1,0 +1,22 @@
+import ILog.dzn;
+import IIntrusionDetection.dzn;
+import IIntrusionDetectionRelaxed.dzn;
+
+
+component IntrusionDetection {
+    provides IIntrusionDetection p;
+    requires IIntrusionDetectionRelaxed r;
+    requires ILog rl;
+
+    behavior {
+        enum Status { UNKNOWN, SAFE, UNSAFE };
+        Status s = Status.UNKNOWN;
+
+        [ s.UNKNOWN] on r.triggered(): { p.triggered(); s = Status.UNSAFE; }
+        [ s.UNKNOWN] on r.cleared(): { p.cleared(); s = Status.SAFE; }
+        [ s.SAFE ] on r.triggered(): { p.triggered(); s = Status.UNSAFE; }
+        [ s.SAFE ] on r.cleared(): {/*  rl.logMsg($"Unexpected event: 'cleared' in SAFE."$); */ }
+        [ s.UNSAFE ] on r.cleared(): { p.cleared(); s = Status.SAFE; }
+        [ s.UNSAFE ] on r.triggered(): { /* rl.logMsg($"Unexpected event: 'triggered' in UNSAFE."$); */}
+    }
+}
