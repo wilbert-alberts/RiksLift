@@ -8,8 +8,6 @@ interface IDestinationSensor
     in void cancelDestination();
     out void destinationReached();
 
-    in  void getPosition(Position pos);
-
     behavior {
         enum State  { IDLE, ARMED };
         State state = State.IDLE;
@@ -17,6 +15,5 @@ interface IDestinationSensor
         [ state.IDLE ] on setDestination: state = State.ARMED;
         [ state.ARMED ] on cancelDestination: state = State.IDLE;
         [ state.ARMED ] on inevitable:  { destinationReached; state = State.IDLE; }
-        [ true ] on getPosition: {}
     }
 }

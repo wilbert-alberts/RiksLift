@@ -3,20 +3,24 @@ interface IPlanner
     extern Position $Position$;
     extern Delay $Delay$;
 
-    in void getMoveUpFastDelay(Delay d);
-    in void getMoveUpFastPosition(Position p);
-    in void getMoveDownFastDelay(Delay d);
-    in void getMoveDownFastPosition(Position p);
+    in void getMoveUpFastPlanning(Position current, Delay d, Position p);
+    in void getMoveUpSlowPlanning(Position current, Delay d, Position p);
+
+    in void getMoveDownFastPlanning(Position current, Delay d, Position p);
+    in void getMoveDownSlowPlanning(Position current, Delay d, Position p);
+
     in  void setEndstopUpPosition(Position p);
     in  void setEndstopDownPosition(Position p);
 
 
     behavior {
          [ true ] on 
-            getMoveUpFastDelay, 
-            getMoveUpFastPosition, 
-            getMoveDownFastDelay, 
-            getMoveDownFastPosition, 
+            getMoveUpFastPlanning,
+            getMoveUpSlowPlanning,
+     
+            getMoveDownFastPlanning,
+            getMoveDownSlowPlanning,
+     
             setEndstopDownPosition, 
             setEndstopUpPosition: {}
     }

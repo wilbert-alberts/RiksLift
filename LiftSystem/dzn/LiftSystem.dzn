@@ -13,6 +13,7 @@ import ForeignDestinationSensor.dzn;
 import ForeignPlanner.dzn;
 import ForeignEndstop.dzn;
 import ForeignLog.dzn;
+import ForeignPositionSensor.dzn;
 
 
 component LiftSystem
@@ -20,34 +21,45 @@ component LiftSystem
     provides IMoveUpDownRelaxed p;
 
     system {
-        FLog fLog;
         MoveUpDownTopArmor mudArmor;
+        FLog fLog;
+
         MoveUpDown mud;
         SMoveDown smd;
         SMoveUp smu;
+
         HomeDown hd;
         MoveDown rd;
+
         HomeUp hu;
         MoveUp ru;
-        FMotor huMotor;
-        FMotor ruMotor;
-        FMotor hdMotor;
-        FMotor rdMotor;
-        FTimer rHuTimer;
-        FTimer rHdTimer;
-        FTimer rRuTimer;
-        FTimer rRdTimer;
-        FDestinationSensor rHuPositionSensor;
-        FDestinationSensor rHdPositionSensor;
-        FDestinationSensor rRuPositionSensor;
-        FDestinationSensor rRdPositionSensor;
+
+        FDestinationSensor ruFastDestinationSensor;
+        FDestinationSensor ruSlowDestinationSensor;
+        FPositionSensor ruPositionSensor;
+        FTimer ruTimer;
         FPlanner ruPlanner;
+        FMotor ruMotor;
+
+        FDestinationSensor rdFastDestinationSensor;
+        FDestinationSensor rdSlowDestinationSensor;
+        FPositionSensor rdPositionSensor;
+        FTimer rdTimer;
         FPlanner rdPlanner;
+        FMotor rdMotor;
+
+        FMotor huMotor;
         FPlanner huPlanner;
+        FPositionSensor huPositionSensor;
+        FEndstop huEndstop;
+        FTimer huTimer;
+
+        FMotor hdMotor;
         FPlanner hdPlanner;
-        FEndstop rEndstopUp;
-        FEndstop rEndstopDown;
-            
+        FPositionSensor hdPositionSensor;
+        FEndstop hdEndstop;
+        FTimer hdTimer;
+
         mudArmor.p <=> p;
         mudArmor.rLog <=> fLog.p;
 
@@ -61,29 +73,31 @@ component LiftSystem
         smu.regularMove <=> ru.p;
         smu.homedMove <=> hu.p;
 
-        hu.rPlanner <=> huPlanner.p;
-        hd.rPlanner <=> hdPlanner.p;
-        ru.rPlanner <=> ruPlanner.p;
-        rd.rPlanner <=> rdPlanner.p;
+        ru.motor <=> ruMotor.p;
+        ru.timer <=> ruTimer.p;
+        ru.positionSensor <=> ruPositionSensor.p;
+        ru.fastDestinationSensor <=> ruFastDestinationSensor.p;
+        ru.slowDestinationSensor <=> ruSlowDestinationSensor.p;
+        ru.planner <=> ruPlanner.p;
 
-        hu.rEndstop <=> rEndstopUp.p;
-        hd.rEndstop <=> rEndstopDown.p;
+        rd.motor <=> rdMotor.p;
+        rd.timer <=> rdTimer.p;
+        rd.positionSensor <=> rdPositionSensor.p;
+        rd.fastDestinationSensor <=> rdFastDestinationSensor.p;
+        rd.slowDestinationSensor <=> rdSlowDestinationSensor.p;
+        rd.planner <=> rdPlanner.p;
 
-        hu.rTimer <=> rHuTimer.p;
-        ru.rTimer <=> rRuTimer.p;
-        hd.rTimer <=> rHdTimer.p;
-        rd.rTimer <=> rRdTimer.p;
+        hu.motor <=> huMotor.p;
+        hu.timer <=> huTimer.p;
+        hu.endstop <=> huEndstop.p;
+        hu.positionSensor <=> huPositionSensor.p;
+        hu.planner <=> huPlanner.p;
 
-        hu.rMotor <=> huMotor.p;
-        hu.rPositionSensor <=> rHuPositionSensor.p;
+        hd.motor <=> hdMotor.p;
+        hd.timer <=> hdTimer.p;
+        hd.endstop <=> hdEndstop.p;
+        hd.positionSensor <=> hdPositionSensor.p;
+        hd.planner <=> hdPlanner.p;
 
-        ru.rMotor <=> ruMotor.p;
-        ru.rPositionSensor <=> rRuPositionSensor.p;
-
-        hd.rMotor <=> hdMotor.p;
-        hd.rPositionSensor <=> rHdPositionSensor.p;
-
-        rd.rMotor <=> rdMotor.p;
-        rd.rPositionSensor <=> rRdPositionSensor.p;
     }
 }

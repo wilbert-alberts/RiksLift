@@ -1,92 +1,188 @@
 import ITimer.dzn;
 import IMotor.dzn;
-import IDestinationSensor.dzn;
+import IPositionSensor.dzn;
 import IPlanner.dzn;
 import IMoveDown.dzn;
 import IEndstop.dzn;
 
-component HomeDown {
+// In order to home upwards:
+// - the component asks the endstop whether the current position
+//   is INSIDE or OUTSIDE
+// - in case OUTSIDE:
+//     - set Timeout,
+//     - arm Endstop
+//     - move up fast [MOVING_FAST_IN]
+//     - on timeout: 
+//          - failed move
+//     - on endstop: stop, set Timeout [ STOPPING_FAST_IN]
+//          - timeout: go to INSIDE  
+// - [in case INSIDE]
+//     - set Timeout
+//     - arm Endstop
+//     - move down slow [ MOVING_SLOW_OUT]
+//     - on timeout:
+//          - failed move
+//     - on endstop: set Timeout (continue moving) [ MOVING_SLOW_EXTRA_OUT ]
+// - timeout: 
+//     - stop
+//     - set Timeout [ STOPPING_SLOW_OUT]
+// - timeout:
+//     - set Timeout
+//     - arm Endstop
+//     - move up slow [MOVING_SLOW_IN]
+//     - on timeout:
+//         - failed move
+//     - on Endstop:
+//         - stop 
+//         - set timeout [STOPPING_SLOW_IN]
+//  - timeout: 
+//      - get clocked position
+//      - give endstop position to planner
+//      - report finished move.
 
+component HomeDown {
     provides IMoveDown p;
-    requires ITimer rTimer;
-    requires IEndstop rEndstop;
-    requires IMotor rMotor;
-    requires IDestinationSensor rPositionSensor;
-    requires IPlanner rPlanner;
+    requires ITimer timer;
+    requires IEndstop endstop;
+    requires IMotor motor;
+    requires IPositionSensor positionSensor;
+    requires IPlanner planner;
 
     behavior {
-        enum State { IDLE, MOVING_FAST_DOWN, STOPPING_FAST_DOWN, MOVING_SLOW_UP, STOPPING_SLOW_UP, MOVING_SLOW_DOWN, ABORTING };
+        enum State { 
+            IDLE,
+            MOVING_FAST_IN, 
+            STOPPING_FAST_IN, 
+            MOVING_SLOW_OUT, 
+            MOVING_SLOW_EXTRA_OUT, 
+            STOPPING_SLOW_OUT, 
+            MOVING_SLOW_IN, 
+            STOPPING_SLOW_IN,
+            FAILING_STOPPING,
+            ABORTING
+        };
+
         State state = State.IDLE;
         ITimer.Delay delay;
         IPlanner.Position position;
         IEndstop.State es = IEndstop.State.UNKNOWN;
 
         [ state.IDLE ] on p.moveDown(): { 
-            es = rEndstop.getState();
+            es = endstop.getState();
             if (es == IEndstop.State.INSIDE) {
-                rMotor.moveUpSlow();
-                state = State.MOVING_SLOW_UP;                    
+                timer.setTimer($Delay(HOMING_MOVING_SLOW_OUT)$);
+                motor.moveUpSlow();
+                state = State.MOVING_SLOW_OUT;                    
             }
             else if (es == IEndstop.State.OUTSIDE) {
-                rMotor.moveDownFast();
-                state = State.MOVING_FAST_DOWN;                    
+                timer.setTimer($Delay(HOMING_MOVING_FAST_IN)$);
+                motor.moveDownFast();
+                state = State.MOVING_FAST_IN;                    
             }
         }
-        [ state.MOVING_FAST_DOWN ] on rEndstop.entering(): {
-            rMotor.stop();
-            rTimer.setTimer($1.0$);
-            state = State.STOPPING_FAST_DOWN;
+        [ state.MOVING_FAST_IN ] on endstop.entering(): {
+            motor.stop();
+            timer.cancelTimer();
+            timer.setTimer($Delay(HOMING_STOPPING_FAST_IN)$);
+            state = State.STOPPING_FAST_IN;
         }
-        [ state.STOPPING_FAST_DOWN ] on rTimer.timerElapsed(): {
-            rMotor.moveUpSlow();
-            state = State.MOVING_SLOW_UP;
+        [ state.STOPPING_FAST_IN ] on timer.timerElapsed(): {
+            timer.setTimer($Delay(HOMING_MOVING_SLOW_OUT)$);
+            motor.moveUpSlow();
+            state = State.MOVING_SLOW_OUT;
         }
-        [ state.MOVING_SLOW_UP ] on rEndstop.exiting(): {
-            rTimer.setTimer($0.5$);
-            state = State.STOPPING_SLOW_UP;
+        [ state.MOVING_SLOW_OUT ] on endstop.exiting(): {
+            timer.cancelTimer();
+            timer.setTimer($Delay(HOMING_MOVING_EXTRA_OUT)$);
+            state = State.MOVING_SLOW_EXTRA_OUT;
         }
-        [ state.STOPPING_SLOW_UP ] on rTimer.timerElapsed(): {
-            rMotor.stop();
-            rMotor.moveDownSlow();
-            state = State.MOVING_SLOW_DOWN;
+        [ state.MOVING_SLOW_EXTRA_OUT ] on timer.timerElapsed(): {
+            motor.stop();
+            timer.setTimer($Delay(HOMING_STOPPING_SLOW_OUT)$);
+            state = State.STOPPING_SLOW_OUT;
+        }        
+        [ state.STOPPING_SLOW_OUT ] on timer.timerElapsed(): {
+            motor.moveDownSlow();
+            timer.setTimer($Delay(HOMING_MOVING_SLOW_IN)$);
+            state = State.MOVING_SLOW_IN;
+        }        
+        [ state.MOVING_SLOW_IN ] on endstop.entering(): {
+            timer.cancelTimer();
+            motor.stop();
+            timer.setTimer($Delay(HOMING_STOPPING_SLOW_IN)$);
+
+            positionSensor.getLastEndstopPosition(position);
+            planner.setEndstopUpPosition(position);
+
+            state = State.STOPPING_SLOW_IN;
         }
-        [ state.MOVING_SLOW_DOWN ] on rEndstop.entering(): {
-            rMotor.stop();
-            rPositionSensor.getPosition(position);
-            rPlanner.setEndstopDownPosition(position);
+        [ state.STOPPING_SLOW_IN ] on timer.timerElapsed(): {
             p.moveFinished();
             state = State.IDLE;
         }
 
-        [ state.MOVING_FAST_DOWN || state.MOVING_SLOW_UP || state.MOVING_SLOW_DOWN ] on p.abort(): {
-            rMotor.stop();
-            rTimer.setTimer($1.0$);
-            state = State.ABORTING;
+        // If the timer elapses while moving, we didn't see the endstop.
+        // Therefore: fail the move.
+        [ state.MOVING_FAST_IN || state.MOVING_SLOW_OUT || state.MOVING_SLOW_IN ] on timer.timerElapsed(): {
+            motor.stop();
+            timer.setTimer($Delay(HOMING_FAILING_STOPPING$);
+            state = State.FAILING_STOPPING;
         }
-        [ state.STOPPING_FAST_DOWN || state.STOPPING_SLOW_UP ] on p.abort(): {
+        [state.FAILING_STOPPING ] on timer.timerElapsed(): {
+            p.moveFailed();
+            state = State.IDLE;
+        }
+
+        // If we're aborting while moving, stop the motor and set the stopping timer.
+        [ state.MOVING_FAST_IN || state.MOVING_SLOW_OUT || state.MOVING_SLOW_IN ] on p.abort(): {
+            timer.cancelTimer();
+            motor.stop();
+            timer.setTimer($Delay(HOMING_ABORTING$);
             state = State.ABORTING;
         }
 
-        [state.ABORTING] on rTimer.timerElapsed(): {
+        // If we're aborting while stopping (or moving extra out), change to the ABORTING state
+        [ state.STOPPING_FAST_IN || state.STOPPING_SLOW_IN || state.STOPPING_SLOW_OUT || state.MOVING_SLOW_EXTRA_OUT] on p.abort(): {
+            state = State.ABORTING;
+        }
+
+        // If we're aborting while stopping due to failure, change to the ABORTING state
+        [ state.FAILING_STOPPING ] on p.abort(): {
+            state = State.ABORTING;
+        }
+
+        [state.ABORTING] on timer.timerElapsed(): {
             p.moveAborted();
             state = State.IDLE;
         }
-        [state.ABORTING] on rEndstop.entering(), rEndstop.exiting() : {
+
+        // While aborting, ignore any endstop passings.
+        [state.ABORTING] on endstop.entering(), endstop.exiting() : {
         }
- 
-        [ state.STOPPING_SLOW_UP || 
-          state.STOPPING_FAST_DOWN || 
-          state.MOVING_SLOW_UP ||
+
+        [ state.STOPPING_SLOW_OUT || 
+          state.STOPPING_FAST_IN || 
+          state.STOPPING_SLOW_IN || 
+          state.MOVING_SLOW_OUT ||
+          state.MOVING_SLOW_EXTRA_OUT ||
           state.IDLE 
-        ] on rEndstop.entering(): {
+        ] on endstop.entering(): {
             /* Should not happen */ 
         }
         [ state.IDLE || 
-          state.STOPPING_FAST_DOWN || 
-          state.STOPPING_SLOW_UP ||
-          state.MOVING_SLOW_DOWN
-        ]  on rEndstop.exiting(): {
+          state.STOPPING_SLOW_OUT ||
+          state.MOVING_SLOW_IN ||
+          state.MOVING_SLOW_EXTRA_OUT ||
+          state.STOPPING_SLOW_IN ||
+          state.STOPPING_FAST_IN
+        ]  on endstop.exiting(): {
             /* Should not happen */ 
+        }
+
+        [ state.FAILING_STOPPING ] on endstop.exiting(),endstop.entering(): {
+            // Already failed, crossing the endstop now
+            // doesn't change the conclusion that the 
+            // move has failed.
         }
    }
 }

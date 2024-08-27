@@ -1,0 +1,5 @@
+import IPositionSensor.dzn;
+
+component FPositionSensor {
+    provides IPositionSensor p;
+}

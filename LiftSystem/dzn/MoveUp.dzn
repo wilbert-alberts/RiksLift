@@ -1,59 +1,157 @@
+import IPositionSensor.dzn;
 import IMoveUp.dzn;
 import ITimer.dzn;
 import IDestinationSensor.dzn;
 import IMotor.dzn;
 import IPlanner.dzn;
 
+// Move up assumes as precondition a homed system.
+// Homed means that the planner knows the encoder
+// value of the upper endstop.
+
+// In order to move, 
+// - the MoveUp component retrieves the current position
+// - asks the planner for the position and time out time to move fast to
+// - asks the planner for the position and time out time  to move slowly to
+// - programs the destination sensors for these positions
+// - programs the timer to alarm at the slow plus fast timeout
+// - instructs the motor to start moving fast
+// - wait until fast destination passes by
+// - instructs the motor to start moving slow
+// - wait until the slow destination passes by
+// - if achieved: 
+//     - cancel the timer, 
+//     - stop the motor
+//     - program new timer to wait for stopped lift
+//     - wait for timer and report finished move.
+// - on timeout: report a failed move.
+
 component MoveUp {
     provides IMoveUp p;
-    requires ITimer rTimer;
-    requires IDestinationSensor rPositionSensor;
-    requires IMotor rMotor;
-    requires IPlanner rPlanner;
+    requires ITimer timer;
+    requires IDestinationSensor fastDestinationSensor;
+    requires IDestinationSensor slowDestinationSensor;
+    requires IPositionSensor    positionSensor;
+    requires IMotor motor;
+    requires IPlanner planner;
 
     behavior {
-        enum State { IDLE, MOVING_FAST, MOVING_SLOW, STOPPING,  ABORTING };
+        enum State { IDLE, MOVING_FAST, MOVING_SLOW, STOPPING,  ABORTING, FAILING_STOPPING, ABORTING_STOPPING };
         State state = State.IDLE;
-        ITimer.Delay delay;
-        IPlanner.Position position;
+        ITimer.Delay slowDelay;
+        IPlanner.Position slowPosition;
+        ITimer.Delay fastDelay;
+        IPlanner.Position fastPosition;
+        IPlanner.Position currentPosition;
 
         [ state.IDLE ] on p.moveUp(): { 
-            rPlanner.getMoveUpFastDelay(delay);
-            rPlanner.getMoveUpFastPosition(position);
-            rTimer.setTimer(delay);
-            rMotor.moveUpFast();
+            positionSensor.getCurrentPosition(currentPosition);
+            planner.getMoveUpFastPlanning(currentPosition, fastDelay, fastPosition);
+            planner.getMoveUpSlowPlanning(currentPosition, slowDelay, slowPosition);
+            
+            timer.setTimer($fastDelay.plus(slowDelay)$);
+            fastDestinationSensor.setDestination(fastPosition);
+            slowDestinationSensor.setDestination(slowPosition);
+            
+            motor.moveUpFast();
             state = State.MOVING_FAST;
         }
-        [ state.MOVING_FAST ] on rTimer.timerElapsed(): { 
-            rPositionSensor.setDestination(position); 
-            rMotor.moveUpSlow();
+
+        /* Regular move sequence: MOVING_FAST, MOVING_SLOW, STOPPING */
+        [ state.MOVING_FAST ] on fastDestinationSensor.destinationReached(): { 
+            motor.moveUpSlow();
             state = State.MOVING_SLOW;
         }
-        [ state.MOVING_FAST ] on p.abort(): {
-            rTimer.cancelTimer();
-            rMotor.stop();
-            rTimer.setTimer($0.5$);
-            state = State.ABORTING;
-        }
-        [ state.MOVING_SLOW ] on rPositionSensor.destinationReached(): {
-            rMotor.stop();
-            rTimer.setTimer($0.5$);
+        [ state.MOVING_SLOW ] on slowDestinationSensor.destinationReached(): {
+            motor.stop();
+            timer.cancelTimer();
+            timer.setTimer($TIMEOUT_STOP_WHILE_MOVING_SLOW$);
             state = State.STOPPING;
         }
-        [ state.MOVING_SLOW ] on p.abort(): {
-            rPositionSensor.cancelDestination();
-            rMotor.stop();
-            rTimer.setTimer($0.5$);
-            state = State.ABORTING;
-        }
-        [ state.STOPPING ] on rTimer.timerElapsed():  {
+        [ state.STOPPING ] on timer.timerElapsed():  {
             p.moveFinished();
             state = State.IDLE;
         }
+
+        // Aborting while moving fast 
+        [ state.MOVING_FAST ] on p.abort(): {
+            timer.cancelTimer();
+            fastDestinationSensor.cancelDestination();
+            slowDestinationSensor.cancelDestination();
+
+            motor.stop();
+
+            timer.setTimer($Delay(TIMEOUT_ABORT_WHILE_MOVING_FAST)$);
+            state = State.ABORTING;
+        }
+
+        // Aborting while moving slow
+        [ state.MOVING_SLOW ] on p.abort(): {
+            timer.cancelTimer();
+            slowDestinationSensor.cancelDestination();
+
+            motor.stop();
+
+            timer.setTimer($Delay(TIMEOUT_ABORT_WHILE_MOVING_SLOW)$);
+            state = State.ABORTING;
+        }
+
+        // Aborting while stopping
         [ state.STOPPING ] on p.abort():  {
             state = State.ABORTING;
         }
-        [ state.ABORTING ] on rTimer.timerElapsed():  {
+
+        // Ending the abortion
+        [ state.ABORTING ] on timer.timerElapsed():  {
+            p.moveAborted();
+            state = State.IDLE;
+        }
+
+        // Waiting for fastDestinationSensor but seeing slowDestinationSensor
+        [ state.MOVING_FAST ] on slowDestinationSensor.destinationReached(): { 
+            motor.stop();
+
+            timer.cancelTimer();
+            fastDestinationSensor.cancelDestination();
+
+            timer.setTimer($Delay(TIMEOUT_STOPPING_AFTER_FAILING)$);
+            state = State.FAILING_STOPPING;
+        }
+
+        // Timeout during move fast
+        [ state.MOVING_FAST ] on timer.timerElapsed(): {
+            motor.stop();
+
+            fastDestinationSensor.cancelDestination();
+            slowDestinationSensor.cancelDestination();
+
+            timer.setTimer($Delay(TIMEOUT_STOPPING_AFTER_FAILING)$);
+            state = State.FAILING_STOPPING; 
+        }
+
+        // Timeout during move slow
+        [ state.MOVING_SLOW ] on timer.timerElapsed(): {
+            motor.stop();
+
+            slowDestinationSensor.cancelDestination();
+
+            timer.setTimer($Delay(TIMEOUT_STOPPING_AFTER_FAILING)$);
+            state = State.FAILING_STOPPING; 
+        }
+
+        // We failed and stopped, and now stopping has finished
+        [state.FAILING_STOPPING] on timer.timerElapsed(): {
+            p.moveFailed();
+            state = State.IDLE;
+        }
+
+        // We failed and stopped, but now we get an abort
+        [state.FAILING_STOPPING] on p.abort(): {
+            state = State.ABORTING_STOPPING;
+        }
+
+        // We failed and stopped got an abort and now we've stopped.
+        [state.ABORTING_STOPPING] on timer.timerElapsed(): {
             p.moveAborted();
             state = State.IDLE;
         }
