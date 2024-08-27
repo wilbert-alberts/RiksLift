@@ -1,0 +1,5 @@
+import IPlanner.dzn;
+
+component FPlanner {
+    provides IPlanner p;
+}

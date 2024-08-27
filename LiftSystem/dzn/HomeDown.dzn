@@ -6,6 +6,7 @@ import IMoveDown.dzn;
 import IEndstop.dzn;
 
 component HomeDown {
+
     provides IMoveDown p;
     requires ITimer rTimer;
     requires IEndstop rEndstop;
@@ -16,8 +17,8 @@ component HomeDown {
     behavior {
         enum State { IDLE, MOVING_FAST_DOWN, STOPPING_FAST_DOWN, MOVING_SLOW_UP, STOPPING_SLOW_UP, MOVING_SLOW_DOWN, ABORTING };
         State state = State.IDLE;
-        Delay delay;
-        Position position;
+        ITimer.Delay delay;
+        IPlanner.Position position;
         IEndstop.State es = IEndstop.State.UNKNOWN;
 
         [ state.IDLE ] on p.moveDown(): { 

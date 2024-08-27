@@ -16,8 +16,8 @@ component HomeUp {
     behavior {
         enum State { IDLE, MOVING_FAST_UP, STOPPING_FAST_UP, MOVING_SLOW_DOWN, STOPPING_SLOW_DOWN, MOVING_SLOW_UP, ABORTING };
         State state = State.IDLE;
-        Delay delay;
-        Position position;
+        ITimer.Delay delay;
+        IPlanner.Position position;
         IEndstop.State es = IEndstop.State.UNKNOWN;
 
         [ state.IDLE ] on p.moveUp(): { 

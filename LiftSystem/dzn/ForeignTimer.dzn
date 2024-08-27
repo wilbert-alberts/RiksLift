@@ -1,3 +1,4 @@
+import ITimer.dzn;
 
 component FTimer {
     provides ITimer p;

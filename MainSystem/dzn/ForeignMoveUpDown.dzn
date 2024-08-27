@@ -1,0 +1,5 @@
+import IMoveUpDownRelaxed.dzn;
+
+component FMoveUpDown {
+    provides IMoveUpDownRelaxed p;
+}

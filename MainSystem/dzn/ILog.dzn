@@ -1,0 +1,9 @@
+extern string $std::string$;
+
+interface ILog {
+    in void logMsg(string msg);
+
+    behavior {
+        on logMsg: {}
+    }
+}

@@ -1,0 +1,40 @@
+
+interface IMoveUpDownRelaxed {
+    in void moveUp();
+    in void moveDown();
+    in void abort();
+    out void moveFinished();
+    out void moveAborted();
+
+    behavior {
+        enum State { IDLE, MOVING_UP, UP, MOVING_DOWN, DOWN, ABORTING };
+        State state = State.IDLE;
+
+        [ state.IDLE ] on moveUp: { state = State.MOVING_UP; }
+        [ state.IDLE ] on moveDown: { state = State.MOVING_DOWN; }
+        [ state.IDLE ] on abort: { /* Ignore */ }
+        
+        [ state.MOVING_UP ] on inevitable: { moveFinished; state = State.UP; }
+        [ state.MOVING_UP ] on abort: { state = State.ABORTING; }
+        [ state.MOVING_UP ] on moveUp: { /* Ignore */}
+        [ state.MOVING_UP ] on moveDown: { /* Ignore */ }
+
+        [ state.MOVING_DOWN ] on inevitable: { moveFinished; state = State.DOWN; }
+        [ state.MOVING_DOWN ] on abort: { state = State.ABORTING; }
+        [ state.MOVING_DOWN ] on moveUp: { /* Ignore */}
+        [ state.MOVING_DOWN ] on moveDown: { /* Ignore */ }
+
+        [ state.DOWN ] on moveUp: { state = State.MOVING_UP; }
+        [ state.DOWN ] on abort: { /* Ignore */ }
+        [ state.DOWN ] on moveDown: { /* Ignore */ }
+
+        [ state.UP ]   on moveDown: { state = State.MOVING_DOWN; }
+        [ state.UP ] on abort: { /* Ignore */ }
+        [ state.UP ] on moveUp: { /* Ignore */ }
+        
+        [ state.ABORTING ] on inevitable: { moveAborted; state = State.IDLE; }
+        [ state.ABORTING ] on abort: { /* Ignore */ }
+        [ state.ABORTING ] on moveUp: { /* Ignore */ }
+        [ state.ABORTING ] on moveDown: {  /* Ignore */ }
+}
+}

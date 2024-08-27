@@ -1,0 +1,5 @@
+import IDestinationSensor.dzn;
+
+component FDestinationSensor {
+    provides IDestinationSensor p;
+}

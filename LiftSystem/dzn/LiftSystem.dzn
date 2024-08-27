@@ -1,0 +1,89 @@
+import StatefullMoveUp.dzn;
+import StatefullMoveDown.dzn;
+import HomeUp.dzn;
+import HomeDown.dzn;
+import MoveUp.dzn;
+import MoveDown.dzn;
+import MoveUpDown.dzn;
+import MoveUpDownTopArmor.dzn;
+
+import ForeignTimer.dzn;
+import ForeignMotor.dzn;
+import ForeignDestinationSensor.dzn;
+import ForeignPlanner.dzn;
+import ForeignEndstop.dzn;
+import ForeignLog.dzn;
+
+
+component LiftSystem
+{
+    provides IMoveUpDownRelaxed p;
+
+    system {
+        FLog fLog;
+        MoveUpDownTopArmor mudArmor;
+        MoveUpDown mud;
+        SMoveDown smd;
+        SMoveUp smu;
+        HomeDown hd;
+        MoveDown rd;
+        HomeUp hu;
+        MoveUp ru;
+        FMotor huMotor;
+        FMotor ruMotor;
+        FMotor hdMotor;
+        FMotor rdMotor;
+        FTimer rHuTimer;
+        FTimer rHdTimer;
+        FTimer rRuTimer;
+        FTimer rRdTimer;
+        FDestinationSensor rHuPositionSensor;
+        FDestinationSensor rHdPositionSensor;
+        FDestinationSensor rRuPositionSensor;
+        FDestinationSensor rRdPositionSensor;
+        FPlanner ruPlanner;
+        FPlanner rdPlanner;
+        FPlanner huPlanner;
+        FPlanner hdPlanner;
+        FEndstop rEndstopUp;
+        FEndstop rEndstopDown;
+            
+        mudArmor.p <=> p;
+        mudArmor.rLog <=> fLog.p;
+
+        mud.p <=> mudArmor.r;
+        mud.rDown <=> smd.p;
+        mud.rUp <=> smu.p;
+
+        smd.regularMove <=> rd.p;
+        smd.homedMove <=> hd.p;
+
+        smu.regularMove <=> ru.p;
+        smu.homedMove <=> hu.p;
+
+        hu.rPlanner <=> huPlanner.p;
+        hd.rPlanner <=> hdPlanner.p;
+        ru.rPlanner <=> ruPlanner.p;
+        rd.rPlanner <=> rdPlanner.p;
+
+        hu.rEndstop <=> rEndstopUp.p;
+        hd.rEndstop <=> rEndstopDown.p;
+
+        hu.rTimer <=> rHuTimer.p;
+        ru.rTimer <=> rRuTimer.p;
+        hd.rTimer <=> rHdTimer.p;
+        rd.rTimer <=> rRdTimer.p;
+
+        hu.rMotor <=> huMotor.p;
+        hu.rPositionSensor <=> rHuPositionSensor.p;
+
+        ru.rMotor <=> ruMotor.p;
+        ru.rPositionSensor <=> rRuPositionSensor.p;
+
+        hd.rMotor <=> hdMotor.p;
+        hd.rPositionSensor <=> rHdPositionSensor.p;
+
+        rd.rMotor <=> rdMotor.p;
+        rd.rPositionSensor <=> rRdPositionSensor.p;
+    }
+}

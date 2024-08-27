@@ -1,0 +1,5 @@
+import IMotor.dzn;
+
+component FMotor {
+    provides IMotor p;
+}

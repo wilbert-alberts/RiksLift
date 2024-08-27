@@ -1,0 +1,38 @@
+
+interface IMoveUpDownRelaxed {
+    in void moveUp();
+    in void moveDown();
+    in void abort();
+    out void moveFinished();
+    out void moveAborted();
+
+    behavior {
+        enum State { IDLE, MOVING_UP, UP, MOVING_DOWN, DOWN, ABORTING };
+        State state = State.IDLE;
+
+        [ state.IDLE ] on moveUp: { state = State.MOVING_UP; }
+        [ state.IDLE ] on moveDown: { state = State.MOVING_DOWN; }
+        [ state.IDLE ] on inevitable: { moveFinished; }
+        [ state.IDLE ] on inevitable: { moveAborted; }
+        
+        [ state.MOVING_UP ] on inevitable: { moveFinished; state = State.UP; }
+        [ state.MOVING_UP ] on abort: { state = State.ABORTING; }
+        [ state.MOVING_UP ] on inevitable: { moveAborted; }
+
+        [ state.MOVING_DOWN ] on inevitable: { moveFinished; state = State.DOWN; }
+        [ state.MOVING_DOWN ] on abort: { state = State.ABORTING; }
+        [ state.MOVING_DOWN ] on inevitable: { moveAborted; }
+
+        [ state.DOWN ] on moveUp: { state = State.MOVING_UP; }
+        [ state.DOWN ] on inevitable: { moveFinished; }
+        [ state.DOWN ] on inevitable: { moveAborted; }
+
+        [ state.UP ]   on moveDown: { state = State.MOVING_DOWN; }
+        [ state.UP ] on inevitable: { moveFinished; }
+        [ state.UP ] on inevitable: { moveAborted; }
+        
+        [ state.ABORTING ] on inevitable: { moveAborted; state = State.IDLE; }
+        [ state.ABORTING ] on inevitable: { moveFinished; }
+
+    }
+}

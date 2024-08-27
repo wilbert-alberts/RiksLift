@@ -1,0 +1,28 @@
+import Application.dzn;
+import SafetySystem.dzn;
+import MoveUpDownBottomArmor.dzn;
+import ForeignMoveUpDown.dzn;
+import ForeignLog.dzn;
+
+component System 
+{
+    provides IApplication p;
+
+
+    system {
+        Application    app;
+        SafetySystem   safetySystem;
+        MoveUpDownBottomArmor mud;
+        
+        FMoveUpDown fmud;
+        FLog flog;
+
+        p <=> app.p;
+
+        app.rLift <=> mud.p;
+        app.rSafety <=> safetySystem.p;
+
+        mud.r <=> fmud.p;
+        mud.rLog <=> flog.p;
+    }
+}

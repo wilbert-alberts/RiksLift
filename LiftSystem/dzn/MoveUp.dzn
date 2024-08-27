@@ -14,8 +14,8 @@ component MoveUp {
     behavior {
         enum State { IDLE, MOVING_FAST, MOVING_SLOW, STOPPING,  ABORTING };
         State state = State.IDLE;
-        Delay delay;
-        Position position;
+        ITimer.Delay delay;
+        IPlanner.Position position;
 
         [ state.IDLE ] on p.moveUp(): { 
             rPlanner.getMoveUpFastDelay(delay);

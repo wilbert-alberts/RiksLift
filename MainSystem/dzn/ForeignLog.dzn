@@ -1,0 +1,6 @@
+import ILog.dzn;
+
+component FLog
+{
+    provides ILog p;
+}

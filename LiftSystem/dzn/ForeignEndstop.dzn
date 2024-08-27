@@ -1,0 +1,5 @@
+import IEndstop.dzn;
+
+component FEndstop {
+    provides IEndstop p;
+}
