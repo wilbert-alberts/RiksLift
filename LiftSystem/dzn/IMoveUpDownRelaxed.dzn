@@ -3,8 +3,10 @@ interface IMoveUpDownRelaxed {
     in void moveUp();
     in void moveDown();
     in void abort();
+
     out void moveFinished();
     out void moveAborted();
+    out void moveFailed();
 
     behavior {
         enum State { IDLE, MOVING_UP, UP, MOVING_DOWN, DOWN, ABORTING };
@@ -15,11 +17,13 @@ interface IMoveUpDownRelaxed {
         [ state.IDLE ] on abort: { /* Ignore */ }
         
         [ state.MOVING_UP ] on inevitable: { moveFinished; state = State.UP; }
+        [ state.MOVING_UP ] on inevitable: { moveFailed; state = State.IDLE; }
         [ state.MOVING_UP ] on abort: { state = State.ABORTING; }
         [ state.MOVING_UP ] on moveUp: { /* Ignore */}
         [ state.MOVING_UP ] on moveDown: { /* Ignore */ }
 
         [ state.MOVING_DOWN ] on inevitable: { moveFinished; state = State.DOWN; }
+        [ state.MOVING_DOWN ] on inevitable: { moveFailed; state = State.IDLE; }
         [ state.MOVING_DOWN ] on abort: { state = State.ABORTING; }
         [ state.MOVING_DOWN ] on moveUp: { /* Ignore */}
         [ state.MOVING_DOWN ] on moveDown: { /* Ignore */ }

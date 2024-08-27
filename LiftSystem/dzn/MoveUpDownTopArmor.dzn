@@ -14,24 +14,26 @@ component MoveUpDownTopArmor {
 
         [ state.IDLE ] on p.moveUp(): { r.moveUp(); state = State.MOVING_UP; }
         [ state.IDLE ] on p.moveDown(): { r.moveDown(); state = State.MOVING_DOWN; }
-        [ state.IDLE ] on p.abort(): {  rLog.logMsg($"WARNING: received unexpected abort in IDLE."$); }
+        [ state.IDLE ] on p.abort(): {  r.abort(); /* due to race condition */  }
 
         [ state.MOVING_UP ] on r.moveFinished(): { p.moveFinished(); state = State.UP; }
+        [ state.MOVING_UP ] on r.moveFailed(): { p.moveFailed(); state = State.IDLE; }
         [ state.MOVING_UP ] on p.abort(): { r.abort(); state = State.ABORTING; }
         [ state.MOVING_UP ] on p.moveUp(): { rLog.logMsg($"WARNING: received unexpected moveUp in MOVING_UP."$); }
         [ state.MOVING_UP ] on p.moveDown(): { rLog.logMsg($"WARNING: received unexpected moveDown in MOVING_UP."$); }
 
         [ state.MOVING_DOWN ] on r.moveFinished(): { p.moveFinished(); state = State.DOWN; }
+        [ state.MOVING_DOWN ] on r.moveFailed(): { p.moveFailed(); state = State.IDLE; }
         [ state.MOVING_DOWN ] on p.abort(): { r.abort(); state = State.ABORTING; }
         [ state.MOVING_DOWN ] on p.moveUp(): { rLog.logMsg($"WARNING: received unexpected moveUp in MOVING_DOWN."$);}
         [ state.MOVING_DOWN ] on p.moveDown(): { rLog.logMsg($"WARNING: received unexpected moveDown in MOVING_DOWN."$); }
 
         [ state.DOWN ] on p.moveUp(): { r.moveUp(); state = State.MOVING_UP; }
-        [ state.DOWN ] on p.abort(): {  rLog.logMsg($"WARNING: received unexpected abort in DOWN."$);  }
+        [ state.DOWN ] on p.abort(): {  r.abort(); /* due to race condition */   }
         [ state.DOWN ] on p.moveDown(): {  rLog.logMsg($"WARNING: received unexpected moveDown in DOWN."$);  }
 
         [ state.UP ] on p.moveDown(): { r.moveDown(); state = State.MOVING_DOWN; }
-        [ state.UP ] on p.abort(): {  rLog.logMsg($"WARNING: received unexpected abort in UP."$);  }
+        [ state.UP ] on p.abort(): {  r.abort(); /* due to race condition */   }
         [ state.UP ] on p.moveUp(): { rLog.logMsg($"WARNING: received unexpected moveUp in UP."$);  }
    
         [ state.ABORTING ] on r.moveAborted(): { p.moveAborted(); state = State.IDLE; }
