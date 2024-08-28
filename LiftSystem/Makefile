@@ -10,6 +10,12 @@ EXE=Lift.exe
 # Specification of all manually written c++ sources
 
 SRCS+= main.cpp
+SRCS+= MQTT.cpp
+SRCS+= MQTTBridge.cpp
+SRCS+= MQTT_MoveUpDown.cpp
+SRCS+= Foreign.cpp
+SRCS+= FMoveUpDown.cpp
+
 
 # Specification of all dezyne models 
 
@@ -18,6 +24,7 @@ DZNS+= ForeignEndstop.dzn
 DZNS+= ForeignLog.dzn
 DZNS+= ForeignMotor.dzn
 DZNS+= ForeignPlanner.dzn
+DZNS+= ForeignPositionSensor.dzn
 DZNS+= ForeignTimer.dzn
 DZNS+= HomeDown.dzn
 DZNS+= HomeUp.dzn
@@ -30,6 +37,7 @@ DZNS+= IMoveUpDown.dzn
 DZNS+= IMoveUpDownRelaxed.dzn
 DZNS+= IMoveUp.dzn
 DZNS+= IPlanner.dzn
+DZNS+= IPositionSensor.dzn
 DZNS+= ITimer.dzn
 DZNS+= LiftSystem.dzn
 DZNS+= MoveDown.dzn
@@ -47,7 +55,7 @@ GENINCS=$(DZNS:.dzn=.hh)
 OBJS=$(SRCS:.cpp=.o) $(GENSRCS:.cc=.o) $(DZNRUNTIMEOBJS)
 
 # Use cpp to generate dependencies
-CPPFLAGS+=-MMD -Wall -g
+CPPFLAGS+=-MMD -Wall -g -include "Position.hh" -include "Delay.hh"
 
 # Libraries
 LIBS=-lpaho-mqttpp3 -lpaho-mqtt3c
@@ -91,7 +99,7 @@ thread-pool.o: $(DZNRUNTIME)/thread-pool.cc
 	g++ $(CPPFLAGS) $(INCS) -c $<
 
 %.o: %.cc
-	g++ -include "Position.hh" -include "Delay.hh" $(CPPFLAGS) $(INCS) -c $<
+	g++ $(CPPFLAGS) $(INCS) -c $<
 
 %.hh: dzn/%.dzn
 	$(DZN) code -l c++ -o . $<

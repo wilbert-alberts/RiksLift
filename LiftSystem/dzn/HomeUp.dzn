@@ -125,7 +125,7 @@ component HomeUp {
         // Therefore: fail the move.
         [ state.MOVING_FAST_IN || state.MOVING_SLOW_OUT || state.MOVING_SLOW_IN ] on timer.timerElapsed(): {
             motor.stop();
-            timer.setTimer($Delay(HOMING_FAILING_STOPPING$);
+            timer.setTimer($Delay(HOMING_FAILING_STOPPING)$);
             state = State.FAILING_STOPPING;
         }
         [state.FAILING_STOPPING ] on timer.timerElapsed(): {
@@ -137,7 +137,7 @@ component HomeUp {
         [ state.MOVING_FAST_IN || state.MOVING_SLOW_OUT || state.MOVING_SLOW_IN ] on p.abort(): {
             timer.cancelTimer();
             motor.stop();
-            timer.setTimer($Delay(HOMING_ABORTING$);
+            timer.setTimer($Delay(HOMING_ABORTING)$);
             state = State.ABORTING;
         }
 
