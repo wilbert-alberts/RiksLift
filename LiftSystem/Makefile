@@ -15,6 +15,13 @@ SRCS+= MQTTBridge.cpp
 SRCS+= MQTT_MoveUpDown.cpp
 SRCS+= Foreign.cpp
 SRCS+= FMoveUpDown.cpp
+SRCS+= FMotor.cpp
+SRCS+= FTimer.cpp
+SRCS+= FPositionSensor.cpp
+SRCS+= FPlanner.cpp
+SRCS+= FEndstop.cpp
+SRCS+= FDestinationSensor.cpp
+
 
 
 # Specification of all dezyne models 
