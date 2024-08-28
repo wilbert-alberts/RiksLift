@@ -62,11 +62,11 @@ GENINCS=$(DZNS:.dzn=.hh)
 OBJS=$(SRCS:.cpp=.o) $(GENSRCS:.cc=.o) $(DZNRUNTIMEOBJS)
 
 # Use cpp to generate dependencies
-CPPFLAGS+=-MMD -Wall -g -include "Position.hh" -include "Delay.hh"
+CPPFLAGS+=-MMD -Wall -g -c -include "Position.hh" -include "Delay.hh"
 
 # Libraries
 LIBS=-lpaho-mqttpp3 -lpaho-mqtt3c
-INCS=-I . -I $(DZNRUNTIME)
+INCS=-I . -I $(DZNRUNTIME) -I $(SRCDIR)
 
 all: $(EXE)
 
@@ -101,6 +101,7 @@ std-async.o: $(DZNRUNTIME)/std-async.cc
 thread-pool.o: $(DZNRUNTIME)/thread-pool.cc
 	g++ $(CPPFLAGS) -c -I $(DZNRUNTIME) $<
 
+main.cpp: $(GENINCS)
 
 %.o: %.cpp
 	g++ $(CPPFLAGS) $(INCS) -c $<
