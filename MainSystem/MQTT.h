@@ -8,8 +8,7 @@ namespace MQTT
     typedef enum
     {
         INTRUSIONDETECTION,
-        LIFT,
-        LIFTSENSOR,
+        MOVEUPDOWN,
         BUTTON
     } Device;
 

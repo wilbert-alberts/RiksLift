@@ -6,6 +6,8 @@
 #include "System.hh"
 #include "MQTTBridge.h"
 #include "FButton.h"
+#include "FMoveUpDown.hh"
+
 // #include "FMoveUpDown.hh"
 
 int main(int argc, char *argv[])
@@ -36,18 +38,8 @@ int main(int argc, char *argv[])
         fDownButton.setLocation(MQTT::Location::DOWN);
         fDownButton.connect();
 
-        // sys.liftSystem.foreignLiftMotor.setMQTTBridge(&mqtt);
-        // sys.liftSystem.foreignLiftMotor.connect();
-        // sys.liftSystem.downLog.setComponentID("downLiftSensor");
-        // sys.liftSystem.upLog.setComponentID("upLiftSensor");
-
-        // sys.liftSystem.fDownSensor.setLocation(MQTT::Location::DOWN);
-        // sys.liftSystem.fDownSensor.setMQTTBridge(&mqtt);
-        // sys.liftSystem.fDownSensor.connect();
-
-        // sys.liftSystem.fUpSensor.setLocation(MQTT::Location::UP);
-        // sys.liftSystem.fUpSensor.setMQTTBridge(&mqtt);
-        // sys.liftSystem.fUpSensor.connect();
+        sys.fmud.setMQTTBridge(&mqtt);
+        sys.fmud.connect();       
 
         sys.safetySystem.foreignIdUp.setLocation(MQTT::Location::UP);
         sys.safetySystem.foreignIdUp.setMQTTBridge(&mqtt);
@@ -59,6 +51,7 @@ int main(int argc, char *argv[])
 
         sys.safetySystem.logDown.setComponentID("intrusionDetectionDown");
         sys.safetySystem.logUp.setComponentID("intrusionDetectionUp");
+        sys.flog.setComponentID("MoveUpDownBottomArmor");
 
         mqtt.processMessages();
     }

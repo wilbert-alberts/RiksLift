@@ -5,8 +5,7 @@ namespace MQTT
     static const std::string UNKNOWN("unknown");
 
     static const std::string DEVICE_INTRUSIONDETECTION("intrusiondetection");
-    static const std::string DEVICE_LIFT("lift");
-    static const std::string DEVICE_LIFTSENSOR("liftsensor");
+    static const std::string DEVICE_MOVEUPDOWN("lift");
     static const std::string DEVICE_BUTTON("button");
 
     static const std::string LOCATION_UP("up");
@@ -21,10 +20,8 @@ namespace MQTT
         {
         case Device::INTRUSIONDETECTION:
             return DEVICE_INTRUSIONDETECTION;
-        case Device::LIFT:
-            return DEVICE_LIFT;
-        case Device::LIFTSENSOR:
-            return DEVICE_LIFTSENSOR;
+        case Device::MOVEUPDOWN:
+            return DEVICE_MOVEUPDOWN;
         case Device::BUTTON:
             return DEVICE_BUTTON;
         default:
