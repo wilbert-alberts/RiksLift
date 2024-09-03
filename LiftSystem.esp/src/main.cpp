@@ -1,18 +1,23 @@
 #include <Arduino.h>
+#include "LiftSystem.hh"
+#include "FMoveUpDown.h"
+#include "dzn/runtime.hh"
+#include "dzn/locator.hh"
 
-// put function declarations here:
-int myFunction(int, int);
+dzn::locator loc;
+dzn::runtime rt;
+
+LiftSystem liftSystem(loc);
+FMoveUpDown fMoveUpDown;
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  loc.set(rt);
+
+  liftSystem.fLog.setComponentID("mudArmor");
+  fMoveUpDown.setSystem(&liftSystem);
+  
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
 }
