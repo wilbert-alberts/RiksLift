@@ -1,3 +1,4 @@
+import Types.dzn;
 import IPositionSensor.dzn;
 import IMoveDown.dzn;
 import ITimer.dzn;
@@ -38,11 +39,11 @@ component MoveDown {
     behavior {
         enum State { IDLE, MOVING_FAST, MOVING_SLOW, STOPPING,  ABORTING,  FAILING_STOPPING, ABORTING_STOPPING };
         State state = State.IDLE;
-        ITimer.Delay slowDelay;
-        IPlanner.Position slowPosition;
-        ITimer.Delay fastDelay;
-        IPlanner.Position fastPosition;
-        IPlanner.Position currentPosition;
+        Delay slowDelay;
+        Position slowPosition;
+        Delay fastDelay;
+        Position fastPosition;
+        Position currentPosition;
 
         [ state.IDLE ] on p.moveDown(): { 
             positionSensor.getCurrentPosition(currentPosition);

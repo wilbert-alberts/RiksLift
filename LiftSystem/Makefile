@@ -53,6 +53,8 @@ DZNS+= MoveUpDownTopArmor.dzn
 DZNS+= MoveUp.dzn
 DZNS+= StatefullMoveDown.dzn
 DZNS+= StatefullMoveUp.dzn
+DZNS+= Types.dzn
+
 
 # Determination of generated sources and includes
 GENSRCS=$(DZNS:.dzn=.cc)
@@ -62,7 +64,8 @@ GENINCS=$(DZNS:.dzn=.hh)
 OBJS=$(SRCS:.cpp=.o) $(GENSRCS:.cc=.o) $(DZNRUNTIMEOBJS)
 
 # Use cpp to generate dependencies
-CPPFLAGS+=-MMD -Wall -g -c -include "Position.hh" -include "Delay.hh"
+#CPPFLAGS+=-MMD -Wall -g -c -include "Position.hh" -include "Delay.hh"
+CPPFLAGS+=-MMD -Wall -g -c 
 
 # Libraries
 LIBS=-lpaho-mqttpp3 -lpaho-mqtt3c
@@ -103,6 +106,18 @@ thread-pool.o: $(DZNRUNTIME)/thread-pool.cc
 
 main.cpp: $(GENINCS)
 
+
+Types.cc: Types.hh	
+	touch Types.cc
+
+# Generate and adapt Types.hh in order to
+# include c++ files defining the types
+Types.hh: dzn/Types.dzn
+	$(DZN) code -l c++ -o . dzn/Types.dzn
+	echo '#include "Position.hh"' >> ./Types.hh
+	echo '#include "Delay.hh"' >> ./Types.hh
+	
+
 %.o: %.cpp
 	g++ $(CPPFLAGS) $(INCS) -c $<
 
@@ -112,8 +127,8 @@ main.cpp: $(GENINCS)
 %.hh: dzn/%.dzn
 	$(DZN) code -l c++ -o . $<
 
-%.cc: dzn/%.dzn
-	$(DZN) code -l c++ -o . $<
+%.cc: %.hh
+	# $(DZN) code -l c++ -o . $<
 
 .PRECIOUS: $(GENSRCS) $(GENINCS)
 

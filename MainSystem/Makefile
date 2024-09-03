@@ -99,8 +99,8 @@ main.cpp: $(GENINCS)
 %.hh: dzn/%.dzn
 	$(DZN) code -l c++ -o . $<
 
-%.cc: dzn/%.dzn
-	$(DZN) code -l c++ -o . $<
+%.cc: %.hh
+	# $(DZN) code -l c++ -o . $<
 
 .PRECIOUS: $(GENSRCS) $(GENINCS)
 

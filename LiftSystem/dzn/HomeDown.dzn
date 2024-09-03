@@ -1,3 +1,4 @@
+import Types.dzn;
 import ITimer.dzn;
 import IMotor.dzn;
 import IPositionSensor.dzn;
@@ -63,8 +64,8 @@ component HomeDown {
         };
 
         State state = State.IDLE;
-        ITimer.Delay delay;
-        IPlanner.Position position;
+        Delay delay;
+        Position position;
         IEndstop.State es = IEndstop.State.UNKNOWN;
 
         [ state.IDLE ] on p.moveDown(): { 

@@ -1,8 +1,7 @@
+import Types.dzn;
+
 interface IPlanner
 {
-    extern Position $Position$;
-    extern Delay $Delay$;
-
     in void getMoveUpFastPlanning(Position current, Delay d, Position p);
     in void getMoveUpSlowPlanning(Position current, Delay d, Position p);
 

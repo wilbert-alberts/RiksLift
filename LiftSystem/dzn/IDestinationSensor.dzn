@@ -1,9 +1,7 @@
-// import Types.dzn;
+ import Types.dzn;
 
 interface IDestinationSensor
 {
-    extern Position $Position$;
-    
     in void setDestination(Position posInM);
     in void cancelDestination();
     out void destinationReached();

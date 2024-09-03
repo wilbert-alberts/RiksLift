@@ -29,6 +29,7 @@ DZNS += MoveUpDownTopArmor.dzn
 DZNS += MoveUp.dzn
 DZNS += StatefullMoveDown.dzn
 DZNS += StatefullMoveUp.dzn
+DZNS += Types.dzn
 
 GENSRC_C = $(subst .dzn,.cc,$(DZNS))
 GENSRC_H = $(subst .dzn,.hh,$(DZNS))
@@ -44,9 +45,19 @@ info:
 	echo GENSRC_H $(GENSRC_H)
 	echo GENSRC_H $(GENSRC_H)
 
-%.cc: %.dzn
-	$(DZN) verify $<
-	$(DZN) code -l c++ -o $(OUTDIR) $<
+Types.cc: Types.hh      
+	touch $(OUTDIR)/Types.cc
+
+# Generate and adapt Types.hh in order to
+# include c++ files defining the types
+Types.hh: Types.dzn
+	$(DZN) code -l c++ -o $(OUTDIR) Types.dzn
+	echo '#include "Position.hh"' >> $(OUTDIR)/Types.hh
+	echo '#include "Delay.hh"' >> $(OUTDIR)/Types.hh	
+
+%.cc: %.hh
+	# $(DZN) verify $<
+	# $(DZN) code -l c++ -o $(OUTDIR) $<
 
 %.hh: %.dzn
 	$(DZN) code -l c++ -o $(OUTDIR) $<
