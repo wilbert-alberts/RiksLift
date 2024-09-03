@@ -16,6 +16,11 @@ public:
     void messageReceived(std::string topic, std::string body);
 
 private:
+    void moveAborted();
+    void moveFailed();
+    void moveFinished();
+
+private:
     LiftSystem* system;
     std::string cmdTopic;
     std::string statusTopic;

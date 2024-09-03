@@ -39,6 +39,10 @@ void FMoveUpDown::connect()
     if (system == nullptr)
         throw new std::logic_error("FMoveUpDown::connect expects system to be set.");
 
+    system->mudArmor.r.out.moveAborted =  [this] { this->moveAborted(); };
+    system->mudArmor.r.out.moveFailed =   [this] { this->moveFailed(); };
+    system->mudArmor.r.out.moveFinished = [this] { this->moveFinished(); };
+
     // mqtt->subscribe(cmdTopic, this);
     LOG("connect() - cmdTopic: " + cmdTopic);
     LOG("connect() - cmdTopic body must be: " + MQTT::MoveUpDown::getMsgCommand(MQTT::MoveUpDown::Command::MOVE_UP));
@@ -71,3 +75,24 @@ void FMoveUpDown::messageReceived(std::string topic, std::string body)
     }
     EXIT("messageReceived(topic: " + topic + ", body: " + body + ")");
 }
+
+void FMoveUpDown::moveFinished() {
+    // TODO: send mqtt message with:
+    //   topic: statusTopic
+    //   body:  MQTT::MoveUpDown::statusToString(MQTT::MoveUpDown::Status::STATUS_FINISHED)
+}
+
+void FMoveUpDown::moveFailed() {
+    // TODO: send mqtt message with:
+    //   topic: statusTopic
+    //   body:  MQTT::MoveUpDown::statusToString(MQTT::MoveUpDown::Status::STATUS_FAILED)
+}
+
+void FMoveUpDown::moveAborted() {
+    // TODO: send mqtt message with:
+    //   topic: statusTopic
+    //   body:  MQTT::MoveUpDown::statusToString(MQTT::MoveUpDown::Status::STATUS_ABORTED)
+}
+
+
+

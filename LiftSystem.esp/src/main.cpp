@@ -3,6 +3,8 @@
 #include "FMoveUpDown.h"
 #include "dzn/runtime.hh"
 #include "dzn/locator.hh"
+#include "FTimer.hh"
+#include "FPositionSensor.hh"
 
 dzn::locator loc;
 dzn::runtime rt;
@@ -19,5 +21,7 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  FTimer::loop();
+  FPositionSensor::loop();
+  FDestinationSensor::loop();
 }
