@@ -20,6 +20,8 @@ void setup() {
   fMoveUpDown.setSystem(&liftSystem);
   liftSystem.huEndstop.setLocation(UPPER_FLOOR);
   liftSystem.hdEndstop.setLocation(LOWER_FLOOR);
+  liftSystem.huPositionSensor.setEndstopToMonitor(&liftSystem.huEndstop);
+  liftSystem.hdPositionSensor.setEndstopToMonitor(&liftSystem.hdEndstop);
   
 }
 

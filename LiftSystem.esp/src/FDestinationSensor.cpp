@@ -33,11 +33,6 @@ void FDestinationSensor::p_cancelDestination()
   armed = false;
 }
 
-// void FDestinationSensor::p_getPosition(Position pos)
-// {
-//   /* TODO: check whether needed! Should be retrieved via FPositionSensor */
-// }
-
 void FDestinationSensor::checkArrived(double currentPosition)
 {
   if (armed)
