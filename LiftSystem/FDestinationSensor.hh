@@ -12,7 +12,6 @@ public:
 
   virtual void p_setDestination(Position posInM);
   virtual void p_cancelDestination();
-  virtual void p_getPosition(Position pos);
 
   static void loop();
 

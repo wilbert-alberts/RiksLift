@@ -5,6 +5,7 @@
 #include "dzn/locator.hh"
 #include "FTimer.hh"
 #include "FPositionSensor.hh"
+#include "FEndstop.hh"
 
 dzn::locator loc;
 dzn::runtime rt;
@@ -17,6 +18,8 @@ void setup() {
 
   liftSystem.fLog.setComponentID("mudArmor");
   fMoveUpDown.setSystem(&liftSystem);
+  liftSystem.huEndstop.setLocation(UPPER_FLOOR);
+  liftSystem.hdEndstop.setLocation(LOWER_FLOOR);
   
 }
 
@@ -24,4 +27,5 @@ void loop() {
   FTimer::loop();
   FPositionSensor::loop();
   FDestinationSensor::loop();
+  FEndstop::loop();
 }

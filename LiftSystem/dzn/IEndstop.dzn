@@ -1,7 +1,7 @@
 
 interface IEndstop
 {
-    enum State { UNKNOWN, INSIDE, INSIDE_EXPECTING, OUTSIDE, OUTSIDE_EXPECTING };
+    enum State { UNKNOWN, INSIDE, OUTSIDE };
 
     out void entering();
     out void exiting();
