@@ -1,0 +1,14 @@
+[Unit]
+Description=Application logic for RiksLift as a service.
+After=mosquitto.service
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5s
+
+ExecStart=/usr/bin/bash /home/ben/RiksLift.sh
+
+[Install]
+WantedBy=multi-user.target
+

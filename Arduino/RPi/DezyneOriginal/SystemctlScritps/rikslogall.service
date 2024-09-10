@@ -1,0 +1,14 @@
+[Unit]
+Description=MQTT message logger for RiksLift, as a service.
+After=mosquitto.service
+
+[Service]
+Type=simple
+Restart=on-failure
+Restart-Sec=5s
+
+ExecStart=/usr/bin/bash /home/ben/RiksLogAll.sh
+
+[Install]
+WantedBy=multi-user.target
+

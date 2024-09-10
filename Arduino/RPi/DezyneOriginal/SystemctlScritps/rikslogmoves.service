@@ -1,0 +1,13 @@
+[Unit]
+Description = RiksLift MQTT move message logger, as a service.
+After=mosquitto.service
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/bin/bash /home/ben/RiksLogMoves.sh
+
+[Install]
+WantedBy=multi-user.target
+
