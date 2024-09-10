@@ -23,6 +23,7 @@ void setup() {
   liftSystem.huPositionSensor.setEndstopToMonitor(&liftSystem.huEndstop);
   liftSystem.hdPositionSensor.setEndstopToMonitor(&liftSystem.hdEndstop);
   
+  fMoveUpDown.connect();
 }
 
 void loop() {

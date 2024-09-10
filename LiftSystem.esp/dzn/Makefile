@@ -1,4 +1,4 @@
-DZN = ../../../../dezyne-2.18.2/dzn
+DZN = ../../../dezyne-2.18.2/dzn
 
 OUTDIR = ../src
 

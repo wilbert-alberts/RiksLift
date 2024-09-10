@@ -1,5 +1,5 @@
 # Path to dzn
-DZN=/home/wilbert/dezyne-2.18.2/dzn
+DZN=../../dezyne-2.18.2/dzn
 DZNRUNTIME=./runtime/c++
 DZNRUNTIMEOBJS=pump.o runtime.o std-async.o coroutine.o # thread-pool.o
 DZN_SRCDEST = .
