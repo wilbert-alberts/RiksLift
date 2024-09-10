@@ -18,8 +18,3 @@ void FDestinationSensor::p_cancelDestination()
 {
   /* TODO*/
 }
-
-void FDestinationSensor::p_getPosition(Position pos)
-{
-  /* TODO*/
-}
