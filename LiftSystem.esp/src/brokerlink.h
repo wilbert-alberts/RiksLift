@@ -105,7 +105,7 @@ class BrokerLink {
    bool ETHWasUp = false;
    bool clientWasUp = false;
    bool mqttWasUp = false;
-   NetworkClient ethClient;
+   WiFiClient ethClient;
    static const IPAddress IPLowerFloor;
    static const IPAddress IPUpperFloor;
    static const IPAddress IPMotorControl;

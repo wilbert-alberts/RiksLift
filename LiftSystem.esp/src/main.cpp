@@ -6,29 +6,41 @@
 #include "FTimer.hh"
 #include "FPositionSensor.hh"
 #include "FEndstop.hh"
+#include "brokerlink.h"
+
+#define _DEBUG 1
+#include "debug.h"
 
 dzn::locator loc;
 dzn::runtime rt;
 
-LiftSystem liftSystem(loc);
-FMoveUpDown fMoveUpDown;
+// LiftSystem liftSystem(loc);
+// FMoveUpDown fMoveUpDown;
 
 void setup() {
-  loc.set(rt);
+  Serial.begin(115200);
+  DEBUG("> setup\n");
 
-  liftSystem.fLog.setComponentID("mudArmor");
-  fMoveUpDown.setSystem(&liftSystem);
-  liftSystem.huEndstop.setLocation(UPPER_FLOOR);
-  liftSystem.hdEndstop.setLocation(LOWER_FLOOR);
-  liftSystem.huPositionSensor.setEndstopToMonitor(&liftSystem.huEndstop);
-  liftSystem.hdPositionSensor.setEndstopToMonitor(&liftSystem.hdEndstop);
+  brokerLink.setup();
+  // loc.set(rt);
+
+  // liftSystem.fLog.setComponentID("mudArmor");
+  // fMoveUpDown.setSystem(&liftSystem);
+  // liftSystem.huEndstop.setLocation(UPPER_FLOOR);
+  // liftSystem.hdEndstop.setLocation(LOWER_FLOOR);
+  // liftSystem.huPositionSensor.setEndstopToMonitor(&liftSystem.huEndstop);
+  // liftSystem.hdPositionSensor.setEndstopToMonitor(&liftSystem.hdEndstop);
   
-  fMoveUpDown.connect();
+  // fMoveUpDown.connect();
 }
 
 void loop() {
-  FTimer::loop();
-  FPositionSensor::loop();
-  FDestinationSensor::loop();
-  FEndstop::loop();
+  DEBUG("> loop\n");
+  brokerLink.loop();
+  // FTimer::loop();
+  // FPositionSensor::loop();
+  // FDestinationSensor::loop();
+  // FEndstop::loop();
+  delay(1000);
+  DEBUG("< loop\n");
 }

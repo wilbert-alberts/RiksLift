@@ -227,11 +227,11 @@ bool BrokerLink::startETH(bool verbose)
 
   bool r = true;
 
-  if (!ETH.connected()) {
+  if (!ethClient.connected()) {
     if (verbose) { DEBUG("   Connecting ETH"); }
     ETH.begin();
     ETH.config(ip, gateway, subnet, dns);
-    while (!ETH.connected()) {
+    while (!ethClient.connected()) {
       if (verbose) { DEBUG("."); }
       delay(GuardTime);
     }
@@ -244,7 +244,7 @@ bool BrokerLink::startETH(bool verbose)
 bool BrokerLink::ETHIsUp(bool verbose) 
 {
   if (verbose) {DEBUG (">  BrokerLink::ETHIsUp ()");}
-  bool connStatus = ETH.connected();
+  bool connStatus = ethClient.connected();
 
   if (connStatus != ETHWasUp) {
     DEBUG("   At %d, ETH Connected = %s\n",  millis() / 1000, toCCP(connStatus));
@@ -256,7 +256,7 @@ bool BrokerLink::ETHIsUp(bool verbose)
 
 bool BrokerLink::stopETH(bool verbose) {
   bool r = true;
-  ETH.end();
+  ethClient.stop(); // Was: ETH.end();
   if (verbose) { DEBUG(">< BrokerLink::stopETH () = %s\n", toCCP(r)); }
   return r;
 }
