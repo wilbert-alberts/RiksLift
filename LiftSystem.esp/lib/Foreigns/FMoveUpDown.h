@@ -8,22 +8,22 @@
 class FMoveUpDown : public Foreign //, MQTTMessageClient
 {
 public:
-    FMoveUpDown();
-    virtual ~FMoveUpDown();
+    FMoveUpDown(){};
+    virtual ~FMoveUpDown(){};
 
-    void setSystem(LiftSystem* system);
-    void connect();
-    void messageReceived(std::string topic, std::string body);
-
-private:
-    void moveAborted();
-    void moveFailed();
-    void moveFinished();
+    // void setSystem(LiftSystem* system);
+    // void connect();
+    // void messageReceived(std::string topic, std::string body);
 
 private:
-    LiftSystem* system;
-    std::string cmdTopic;
-    std::string statusTopic;
+    // void moveAborted();
+    // void moveFailed();
+    // void moveFinished();
+
+private:
+    // LiftSystem* system;
+    // std::string cmdTopic;
+    // std::string statusTopic;
 
 
 };

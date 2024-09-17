@@ -8,10 +8,14 @@ class MQTTBridge;
 class Foreign
 {
 public:
-    Foreign(){};
-    virtual ~Foreign(){};
+    Foreign();
+    virtual ~Foreign();
+
+    void setMQTTBridge(MQTTBridge* mqtt);
+    virtual void connect();
 
 protected: 
+    MQTTBridge* mqtt;
 };
 
 #endif

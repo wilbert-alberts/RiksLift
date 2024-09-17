@@ -6,22 +6,11 @@
 class FTimer : public skel::FTimer
 {
 public:
-  FTimer(dzn::locator const &locator);
-  virtual ~FTimer();
+  FTimer(dzn::locator const &locator): skel::FTimer(locator){};
+  virtual ~FTimer(){};
 
-  virtual void p_setTimer(Delay delayInS);
-  virtual void p_cancelTimer();
-
-  void checkElapsed();
-
-  static void loop();
-
-private:
-  static std::vector<FTimer*> instances;
-
-  bool          armed;
-  unsigned long startTimeInMs;
-  unsigned long delayTimeInMs;
+  virtual void p_setTimer(Delay delayInS){};
+  virtual void p_cancelTimer(){};
 
 };
 

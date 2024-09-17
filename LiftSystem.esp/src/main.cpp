@@ -8,21 +8,27 @@
 #include "FEndstop.hh"
 #include "brokerlink.h"
 
+#include "ForeignPlanner.hh"
+#include "FPlanner.hh"
+#include "ForeignMotor.hh"
+#include "FMotor.hh"
+
 #define _DEBUG 1
 #include "debug.h"
 
 dzn::locator loc;
 dzn::runtime rt;
-
-// LiftSystem liftSystem(loc);
-// FMoveUpDown fMoveUpDown;
+std::unique_ptr<LiftSystem> liftSystem;
 
 void setup() {
   Serial.begin(115200);
   DEBUG("> setup\n");
 
+  loc.set(rt);
+  liftSystem = std::unique_ptr<LiftSystem>(new LiftSystem(loc));
+
   brokerLink.setup();
-  // loc.set(rt);
+  // FMoveUpDown fMoveUpDown;
 
   // liftSystem.fLog.setComponentID("mudArmor");
   // fMoveUpDown.setSystem(&liftSystem);
