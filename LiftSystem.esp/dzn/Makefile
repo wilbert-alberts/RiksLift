@@ -1,6 +1,6 @@
-DZN = ../../../dezyne-2.18.2/dzn
+DZN = dzn
 
-OUTDIR = ../src
+OUTDIR = ../lib/DezyneGen
 
 DZNS += ForeignDestinationSensor.dzn
 DZNS += ForeignEndstop.dzn
