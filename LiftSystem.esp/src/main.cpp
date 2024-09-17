@@ -19,6 +19,7 @@
 dzn::locator loc;
 dzn::runtime rt;
 std::unique_ptr<LiftSystem> liftSystem;
+std::unique_ptr<FMoveUpDown> fMoveUpDown;
 
 void setup() {
   Serial.begin(115200);
@@ -26,27 +27,27 @@ void setup() {
 
   loc.set(rt);
   liftSystem = std::unique_ptr<LiftSystem>(new LiftSystem(loc));
+  fMoveUpDown = std::unique_ptr<FMoveUpDown>(new FMoveUpDown());
 
   brokerLink.setup();
-  // FMoveUpDown fMoveUpDown;
 
-  // liftSystem.fLog.setComponentID("mudArmor");
-  // fMoveUpDown.setSystem(&liftSystem);
-  // liftSystem.huEndstop.setLocation(UPPER_FLOOR);
-  // liftSystem.hdEndstop.setLocation(LOWER_FLOOR);
-  // liftSystem.huPositionSensor.setEndstopToMonitor(&liftSystem.huEndstop);
-  // liftSystem.hdPositionSensor.setEndstopToMonitor(&liftSystem.hdEndstop);
+  liftSystem->fLog.setComponentID("mudArmor");
+  fMoveUpDown->setSystem(liftSystem.get());
+  liftSystem->huEndstop.setLocation(UPPER_FLOOR);
+  liftSystem->hdEndstop.setLocation(LOWER_FLOOR);
+  liftSystem->huPositionSensor.setEndstopToMonitor(&liftSystem->huEndstop);
+  liftSystem->hdPositionSensor.setEndstopToMonitor(&liftSystem->hdEndstop);
   
-  // fMoveUpDown.connect();
+  fMoveUpDown->connect();
 }
 
 void loop() {
-  DEBUG("> loop\n");
+  // DEBUG("> loop\n");
   brokerLink.loop();
-  // FTimer::loop();
-  // FPositionSensor::loop();
-  // FDestinationSensor::loop();
-  // FEndstop::loop();
-  delay(1000);
-  DEBUG("< loop\n");
+  FTimer::loop();
+  FPositionSensor::loop();
+  FDestinationSensor::loop();
+  FEndstop::loop();
+  // delay(1000);
+  // DEBUG("< loop\n");
 }

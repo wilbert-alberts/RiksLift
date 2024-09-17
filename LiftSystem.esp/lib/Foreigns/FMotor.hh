@@ -4,14 +4,14 @@
 class FMotor : public skel::FMotor
 {
 public:
-    FMotor(dzn::locator const &locator): skel::FMotor(locator){};
-    virtual ~FMotor(){};
+    FMotor(dzn::locator const &locator);
+    virtual ~FMotor();
 
-    virtual void p_moveUpFast(){};
-    virtual void p_moveUpSlow(){};
-    virtual void p_moveDownFast(){};
-    virtual void p_moveDownSlow(){};
-    virtual void p_stop(){};
+    virtual void p_moveUpFast();
+    virtual void p_moveUpSlow();
+    virtual void p_moveDownFast();
+    virtual void p_moveDownSlow();
+    virtual void p_stop();
 };
 
 #endif

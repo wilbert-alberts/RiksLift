@@ -1,13 +1,14 @@
 #include "Foreign.h"
 
 #include <stdexcept>
-#include "ScreenLogger.h"
 
-#define ENTRY(s) logger.log(LogLevel::DEBUG, std::string("> Foreign::")+std::string(s))
-#define EXIT(s) logger.log(LogLevel::DEBUG, std::string("< Foreign::")+std::string(s))
-#define LOG(s) logger.log(LogLevel::DEBUG, std::string("= Foreign::")+std::string(s))
+#define _DEBUG 1
+#include "debug.h"
 
-static StreamLogger logger = ScreenLogger();
+#define ENTRY(s) DEBUG((std::string("> Foreign::")+std::string(s)).c_str())
+#define EXIT(s) DEBUG((std::string("< Foreign::")+std::string(s)).c_str())
+#define LOG(s) DEBUG((std::string("= Foreign::")+std::string(s)).c_str())
+
 
 Foreign::Foreign()
     : mqtt(nullptr)
