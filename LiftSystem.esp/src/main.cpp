@@ -27,7 +27,7 @@ void setup() {
 
   loc.set(rt);
   liftSystem = std::unique_ptr<LiftSystem>(new LiftSystem(loc));
-  fMoveUpDown = std::unique_ptr<FMoveUpDown>(new FMoveUpDown());
+  fMoveUpDown = std::unique_ptr<FMoveUpDown>( new FMoveUpDown());
 
   brokerLink.setup();
 
