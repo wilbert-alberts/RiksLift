@@ -18,8 +18,6 @@
 #include <ETH.h>
 #include <WiFiClient.h>
 
-WifiClient c;
-
 #include <Arduino.h>
 #include "timer.h"
 #include <MQTTPubSubClient.h>

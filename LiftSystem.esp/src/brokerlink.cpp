@@ -39,7 +39,6 @@ void BrokerLink::setup() {
   resetTimer.start (ResetTime);
   toState(AllUp, wait, true);
   loopCount = 0;
-
 }
 
 void BrokerLink::shutdown() {
@@ -437,12 +436,13 @@ const char *BrokerLink::ls2str(LinkState ls) {
   static const char *cu = "ClientUp";
   static const char *bcu = "BrokerComingUp";
   static const char *au = "AllUp";
-  return (ls == AllDown ? ad : ls == ETHComingUp    ? ecu
-                             : ls == ETHUp          ? eu
-                             : ls == ClientComingUp ? ccu
-                             : ls == ClientUp       ? cu
-                             : ls == BrokerComingUp ? bcu
-                                                    : au);
+  return (ls == AllDown        ? ad 
+        : ls == ETHComingUp    ? ecu
+        : ls == ETHUp          ? eu
+        : ls == ClientComingUp ? ccu
+        : ls == ClientUp       ? cu
+        : ls == BrokerComingUp ? bcu
+        :                         au);
 }
 
 String BrokerLink::ip2str(IPAddress ip) {

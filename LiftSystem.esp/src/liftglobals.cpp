@@ -4,7 +4,7 @@
 // BSla, 29 jul 2024
 
 #define _DEBUG 0
-#include "Debug.h"
+#include "debug.h"
 
 #include "liftglobals.h"
 #include "identity.h"
