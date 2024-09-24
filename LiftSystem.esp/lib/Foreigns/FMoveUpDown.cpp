@@ -7,10 +7,10 @@
 
 #include "brokerlink.h"
 
-#define ENTRY(s) // logger.log(LogLevel::DEBUG, std::string("> FMoveUpDown::") + std::string(s))
-#define EXIT(s)  // logger.log(LogLevel::DEBUG, std::string("< FMoveUpDown::") + std::string(s))
-#define LOG(s)   // logger.log(LogLevel::DEBUG, std::string("= FMoveUpDown::") + std::string(s))
-// static StreamLogger logger = ScreenLogger();
+#define ENTRY(s)  logger.log(LogLevel::DEBUG, std::string("> FMoveUpDown::") + std::string(s))
+#define EXIT(s)   logger.log(LogLevel::DEBUG, std::string("< FMoveUpDown::") + std::string(s))
+#define LOG(s)    logger.log(LogLevel::DEBUG, std::string("= FMoveUpDown::") + std::string(s))
+static ScreenLogger logger = ScreenLogger();
 
 FMoveUpDown::FMoveUpDown()
     : cmdTopic(MQTT::MoveUpDown::getTopicCommand()), statusTopic(MQTT::MoveUpDown::getTopicStatus())

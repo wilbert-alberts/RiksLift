@@ -4,21 +4,21 @@
 #define SCREENLOGGER_H
 
 
-// #include <iostream> 
+#include <iostream> 
 #include "StreamLogger.h"
-// using namespace std; 
+using namespace std; 
 
-// class ScreenLogger: public StreamLogger { 
-// public: 
-// 	// Constructor: Opens the log file in append mode 
-// 	ScreenLogger() : StreamLogger(std::cerr)
-// 	{ 
-// 	} 
+class ScreenLogger: public StreamLogger { 
+public: 
+	// Constructor: Opens the log file in append mode 
+	ScreenLogger() : StreamLogger(std::cerr)
+	{ 
+	} 
 
-// 	// Destructor: Closes the log file 
-// 	~ScreenLogger() {  } 
+	// Destructor: Closes the log file 
+	~ScreenLogger() {  } 
 
-// private: 
-// }; 
+private: 
+}; 
 
 #endif

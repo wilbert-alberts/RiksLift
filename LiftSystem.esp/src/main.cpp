@@ -44,7 +44,7 @@ void setup() {
 void loop() {
   DEBUG("> loop\n");
   brokerLink.loop();
-  // FTimer::loop();
+  FTimer::loop();
   // FPositionSensor::loop();
   // FDestinationSensor::loop();
   // FEndstop::loop();
