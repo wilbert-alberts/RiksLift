@@ -1,11 +1,9 @@
 #ifndef FMOVEUPDOWN_H
 #define FMOVEUPDOWN_H
 
-#include "Foreign.h"
 #include "LiftSystem.hh"
-// #include "MQTTBridge.h"
 
-class FMoveUpDown : public Foreign //, MQTTMessageClient
+class FMoveUpDown //: public Foreign, MQTTMessageClient
 {
 public:
     FMoveUpDown();
@@ -16,6 +14,9 @@ public:
     void messageReceived(std::string topic, std::string body);
 
 private:
+    static void brokerlinkCB(const String &value, const size_t size);
+    static FMoveUpDown* INSTANCE;
+
     void moveAborted();
     void moveFailed();
     void moveFinished();

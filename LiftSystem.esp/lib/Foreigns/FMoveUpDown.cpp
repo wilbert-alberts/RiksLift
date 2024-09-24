@@ -1,8 +1,11 @@
+#include <Arduino.h>
 #include <stdexcept>
 
 #include "FMoveUpDown.h"
 #include "MQTT_MoveUpDown.h"
 #include "ScreenLogger.h"
+
+#include "brokerlink.h"
 
 #define ENTRY(s) // logger.log(LogLevel::DEBUG, std::string("> FMoveUpDown::") + std::string(s))
 #define EXIT(s)  // logger.log(LogLevel::DEBUG, std::string("< FMoveUpDown::") + std::string(s))
@@ -10,9 +13,15 @@
 // static StreamLogger logger = ScreenLogger();
 
 FMoveUpDown::FMoveUpDown()
-    : Foreign(), cmdTopic(MQTT::MoveUpDown::getTopicCommand()), statusTopic(MQTT::MoveUpDown::getTopicStatus())
+    : cmdTopic(MQTT::MoveUpDown::getTopicCommand()), statusTopic(MQTT::MoveUpDown::getTopicStatus())
 {
     ENTRY("FMoveUpDown ()");
+    if (INSTANCE == nullptr) {
+        INSTANCE = this;
+    }
+    else {
+        throw new std::logic_error("Should not create more then one FMoveUpDown");
+    }
     EXIT("FMoveUpDown ()");
 }
 
@@ -34,7 +43,6 @@ void FMoveUpDown ::setSystem(LiftSystem *sys)
 void FMoveUpDown::connect()
 {
     ENTRY("connect()");
-    Foreign::connect();
 
     if (system == nullptr)
         throw new std::logic_error("FMoveUpDown::connect expects system to be set.");
@@ -43,7 +51,9 @@ void FMoveUpDown::connect()
     system->mudArmor.r.out.moveFailed =   [this] { this->moveFailed(); };
     system->mudArmor.r.out.moveFinished = [this] { this->moveFinished(); };
 
-    // mqtt->subscribe(cmdTopic, this);
+    String topicStr = cmdTopic.c_str();
+    brokerLink.subscribe(topicStr, FMoveUpDown::brokerlinkCB, false);
+
     LOG("connect() - cmdTopic: " + cmdTopic);
     LOG("connect() - cmdTopic body must be: " + MQTT::MoveUpDown::getMsgCommand(MQTT::MoveUpDown::Command::MOVE_UP));
     LOG("connect() -                    be: " + MQTT::MoveUpDown::getMsgCommand(MQTT::MoveUpDown::Command::MOVE_DOWN));
@@ -54,6 +64,14 @@ void FMoveUpDown::connect()
     LOG("connect() -                    be: " + MQTT::MoveUpDown::getMsgStatus(MQTT::MoveUpDown::Status::FAILED));
     EXIT("connect()");
 }
+
+
+FMoveUpDown*  FMoveUpDown::INSTANCE;
+void  FMoveUpDown::brokerlinkCB(const String &value, const size_t size)
+{
+    INSTANCE->messageReceived(INSTANCE->cmdTopic, value.c_str());
+}
+
 
 void FMoveUpDown::messageReceived(std::string topic, std::string body)
 {

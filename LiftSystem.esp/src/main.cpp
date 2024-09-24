@@ -42,12 +42,12 @@ void setup() {
 }
 
 void loop() {
-  // DEBUG("> loop\n");
+  DEBUG("> loop\n");
   brokerLink.loop();
-  FTimer::loop();
-  FPositionSensor::loop();
-  FDestinationSensor::loop();
-  FEndstop::loop();
-  // delay(1000);
-  // DEBUG("< loop\n");
+  // FTimer::loop();
+  // FPositionSensor::loop();
+  // FDestinationSensor::loop();
+  // FEndstop::loop();
+  delay(1000);
+  DEBUG("< loop\n");
 }
