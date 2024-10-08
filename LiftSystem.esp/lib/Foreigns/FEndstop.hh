@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Location.h"
+#include "endstop.h"
 
 class FEndstop : public skel::FEndstop
 {
@@ -20,6 +21,8 @@ private:
   ::IEndstop::State lastState;
   void checkTransition();
   ::IEndstop::State readState();
+
+  Endstop *thisEndstop;
 
   static std::vector<FEndstop*> instances;
 

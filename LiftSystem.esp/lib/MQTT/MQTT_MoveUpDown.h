@@ -29,6 +29,7 @@ namespace MQTT
 
         const std::string getTopicCommand();
         const std::string getMsgCommand(Command c);
+        const std::string &statusToString(Status d);
     }
 }
 

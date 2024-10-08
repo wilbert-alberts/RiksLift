@@ -14,6 +14,7 @@ public:
     void messageReceived(std::string topic, std::string body);
 
 private:
+    void blPublish (std::string body);
     static void brokerlinkCB(const String &value, const size_t size);
     static FMoveUpDown* INSTANCE;
 

@@ -39,6 +39,7 @@ void FTimer::checkElapsed()
   {
     if (millis() - startTimeInMs > delayTimeInMs)
     {
+      armed = false;
       this->p.out.timerElapsed();
     }
   }

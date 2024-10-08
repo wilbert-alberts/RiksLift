@@ -14,13 +14,13 @@ component SMoveUp {
         [ homedState.NOT_HOMED && moveState.IDLE ] on p.moveUp(): { homedMove.moveUp(); moveState = MoveState.MOVING; }
         [ homedState.NOT_HOMED && moveState.MOVING] on p.abort(): { homedMove.abort(); moveState = MoveState.ABORTING; }
         [ homedState.NOT_HOMED && moveState.MOVING ] on homedMove.moveFinished(): { p.moveFinished(); moveState = MoveState.IDLE; homedState = HomedState.HOMED; }
-        [ homedState.NOT_HOMED && moveState.MOVING ] on homedMove.moveFailed(): { p.moveFinished(); moveState = MoveState.IDLE; }
+        [ homedState.NOT_HOMED && moveState.MOVING ] on homedMove.moveFailed(): { p.moveFailed(); moveState = MoveState.IDLE; }
         [ homedState.NOT_HOMED && moveState.ABORTING ] on homedMove.moveAborted(): { p.moveAborted(); moveState = MoveState.IDLE; }
 
         [ homedState.HOMED && moveState.IDLE ] on p.moveUp(): { regularMove.moveUp(); moveState = MoveState.MOVING; }
         [ homedState.HOMED && moveState.MOVING] on p.abort(): { regularMove.abort(); moveState = MoveState.ABORTING; }
         [ homedState.HOMED && moveState.MOVING ] on regularMove.moveFinished(): { p.moveFinished(); moveState = MoveState.IDLE; }
-        [ homedState.HOMED && moveState.MOVING ] on regularMove.moveFailed(): { p.moveFinished(); moveState = MoveState.IDLE; ; homedState = HomedState.NOT_HOMED; }
+        [ homedState.HOMED && moveState.MOVING ] on regularMove.moveFailed(): { p.moveFailed(); moveState = MoveState.IDLE; ; homedState = HomedState.NOT_HOMED; }
         [ homedState.HOMED && moveState.ABORTING ] on regularMove.moveAborted(): { p.moveAborted(); moveState = MoveState.IDLE; }
     }
 }

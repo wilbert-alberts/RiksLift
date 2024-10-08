@@ -7,20 +7,28 @@
 
 #include "brokerlink.h"
 
-#define ENTRY(s)  logger.log(LogLevel::DEBUG, std::string("> FMoveUpDown::") + std::string(s))
-#define EXIT(s)   logger.log(LogLevel::DEBUG, std::string("< FMoveUpDown::") + std::string(s))
-#define LOG(s)    logger.log(LogLevel::DEBUG, std::string("= FMoveUpDown::") + std::string(s))
+#define ENTRY(s) logger.log(LogLevel::DEBUG, std::string("> FMoveUpDown::") + std::string(s))
+#define EXIT(s) logger.log(LogLevel::DEBUG, std::string("< FMoveUpDown::") + std::string(s))
+#define LOG(s) logger.log(LogLevel::DEBUG, std::string("= FMoveUpDown::") + std::string(s))
 static ScreenLogger logger = ScreenLogger();
+
+void FMoveUpDown::blPublish(std::string body)
+{
+    String topicString = String(statusTopic.c_str());
+    brokerLink.publish(topicString, String(body.c_str()), false);
+}
 
 FMoveUpDown::FMoveUpDown()
     : cmdTopic(MQTT::MoveUpDown::getTopicCommand()), statusTopic(MQTT::MoveUpDown::getTopicStatus())
 {
     ENTRY("FMoveUpDown ()");
-    if (INSTANCE == nullptr) {
+    if (INSTANCE == nullptr)
+    {
         INSTANCE = this;
     }
-    else {
-        throw new std::logic_error("Should not create more then one FMoveUpDown");
+    else
+    {
+        throw new std::logic_error("Should not create more than one FMoveUpDown");
     }
     EXIT("FMoveUpDown ()");
 }
@@ -47,9 +55,13 @@ void FMoveUpDown::connect()
     if (system == nullptr)
         throw new std::logic_error("FMoveUpDown::connect expects system to be set.");
 
-    system->mudArmor.r.out.moveAborted =  [this] { this->moveAborted(); };
-    system->mudArmor.r.out.moveFailed =   [this] { this->moveFailed(); };
-    system->mudArmor.r.out.moveFinished = [this] { this->moveFinished(); };
+    system->mudArmor.p.out.moveAborted = [this]
+    { this->moveAborted(); };
+    system->mudArmor.p.out.moveFailed = [this]
+    { this->moveFailed(); };
+    system->mudArmor.p.out.moveFinished = [this]
+    { this->moveFinished(); };
+
 
     String topicStr = cmdTopic.c_str();
     brokerLink.subscribe(topicStr, FMoveUpDown::brokerlinkCB, false);
@@ -65,13 +77,11 @@ void FMoveUpDown::connect()
     EXIT("connect()");
 }
 
-
-FMoveUpDown*  FMoveUpDown::INSTANCE;
-void  FMoveUpDown::brokerlinkCB(const String &value, const size_t size)
+FMoveUpDown *FMoveUpDown::INSTANCE;
+void FMoveUpDown::brokerlinkCB(const String &value, const size_t size)
 {
     INSTANCE->messageReceived(INSTANCE->cmdTopic, value.c_str());
 }
-
 
 void FMoveUpDown::messageReceived(std::string topic, std::string body)
 {
@@ -94,23 +104,32 @@ void FMoveUpDown::messageReceived(std::string topic, std::string body)
     EXIT("messageReceived(topic: " + topic + ", body: " + body + ")");
 }
 
-void FMoveUpDown::moveFinished() {
-    // TODO: send mqtt message with:
+void FMoveUpDown::moveFinished()
+{
+    // send mqtt message with:
     //   topic: statusTopic
     //   body:  MQTT::MoveUpDown::statusToString(MQTT::MoveUpDown::Status::STATUS_FINISHED)
+    ENTRY("FMoveUpDown::moveFinished");
+    blPublish(MQTT::MoveUpDown::statusToString(MQTT::MoveUpDown::Status::FINISHED));
+    EXIT("FMoveUpDown::moveFinished");
 }
 
-void FMoveUpDown::moveFailed() {
-    // TODO: send mqtt message with:
+void FMoveUpDown::moveFailed()
+{
+    // send mqtt message with:
     //   topic: statusTopic
     //   body:  MQTT::MoveUpDown::statusToString(MQTT::MoveUpDown::Status::STATUS_FAILED)
+    ENTRY("FMoveUpDown::moveFailed");
+    blPublish(MQTT::MoveUpDown::statusToString(MQTT::MoveUpDown::Status::FAILED));
+    EXIT("FMoveUpDown::moveFailed");
 }
 
-void FMoveUpDown::moveAborted() {
-    // TODO: send mqtt message with:
+void FMoveUpDown::moveAborted()
+{
+    // send mqtt message with:
     //   topic: statusTopic
     //   body:  MQTT::MoveUpDown::statusToString(MQTT::MoveUpDown::Status::STATUS_ABORTED)
+    ENTRY("FMoveUpDown::moveAborted");
+    blPublish(MQTT::MoveUpDown::statusToString(MQTT::MoveUpDown::Status::ABORTED));
+    EXIT("FMoveUpDown::moveAborted");
 }
-
-
-

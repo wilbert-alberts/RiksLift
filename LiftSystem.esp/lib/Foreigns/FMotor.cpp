@@ -3,6 +3,7 @@
 
 #include "LiftSystem.hh"
 #include "FMotor.hh"
+#include "vevorVFD.h"
 
 FMotor::FMotor(dzn::locator const &locator)
     : skel::FMotor(locator) {
@@ -14,8 +15,6 @@ FMotor::~FMotor() {
 };
 
 void FMotor::p_moveUpFast() {
-    /* TODO */
-
     /**
      * Goal: to start moving the lift at fast velocity in towards the upper floor.
      * 
@@ -23,11 +22,10 @@ void FMotor::p_moveUpFast() {
      *       velocity as defined in FPlanner.cc
      *
      */
+    vevorVFD.startMove (true, VFD_HIGH);
 };
 
 void FMotor::p_moveUpSlow() {
-    /* TODO */
-
     /**
      * Goal: to start moving the lift at slow velocity in towards the upper floor.
      * 
@@ -35,11 +33,10 @@ void FMotor::p_moveUpSlow() {
      *       velocity as defined in FPlanner.cc
      *
      */
+    vevorVFD.startMove (true, VFD_LOW);
 };
 
 void FMotor::p_moveDownFast() {
-    /* TODO */
-
     /**
      * Goal: to start moving the lift at fast velocity in towards the lower floor.
      * 
@@ -47,10 +44,9 @@ void FMotor::p_moveDownFast() {
      *       velocity as defined in FPlanner.cc
      *
      */
+    vevorVFD.startMove (false, VFD_HIGH);
 };
 void FMotor::p_moveDownSlow() {
-    /* TODO */
-
     /**
      * Goal: to start moving the lift at slow velocity in towards the lower floor.
      * 
@@ -58,12 +54,12 @@ void FMotor::p_moveDownSlow() {
      *       velocity as defined in FPlanner.cc
      *
      */
+    vevorVFD.startMove (false, VFD_LOW);
 };
 
 void FMotor::p_stop() {
-    /* TODO */
-
     /**
      * Goal: to stop moving the lift.
      */
+    vevorVFD.brake ();
 };

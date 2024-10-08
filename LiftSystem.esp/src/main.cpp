@@ -13,6 +13,11 @@
 #include "ForeignMotor.hh"
 #include "FMotor.hh"
 
+#include "hsi.h"
+#include "liftencoder.h"
+#include "simulation.h"
+#include "vevorVFD.h"
+
 #define _DEBUG 1
 #include "debug.h"
 
@@ -24,6 +29,12 @@ std::unique_ptr<FMoveUpDown> fMoveUpDown;
 void setup() {
   Serial.begin(115200);
   DEBUG("> setup\n");
+
+  lowerEndstop.setup (GPIO_LOWER_ENDSTOP);
+  upperEndstop.setup (GPIO_UPPER_ENDSTOP);
+  liftEncoder.setup ();
+  sim.setup ();
+  vevorVFD.setup ();
 
   loc.set(rt);
   liftSystem = std::unique_ptr<LiftSystem>(new LiftSystem(loc));
@@ -42,12 +53,17 @@ void setup() {
 }
 
 void loop() {
-  DEBUG("> loop\n");
+  static uint32_t loopCount = 0;
+//  DEBUG("> loop\n");
   brokerLink.loop();
+  lowerEndstop.loop ();
+  upperEndstop.loop ();
+  sim.loop ();
+  vevorVFD.loop ();
   FTimer::loop();
-  // FPositionSensor::loop();
-  // FDestinationSensor::loop();
-  // FEndstop::loop();
-  delay(1000);
-  DEBUG("< loop\n");
+  FPositionSensor::loop();
+  FDestinationSensor::loop();
+  FEndstop::loop();
+//  delay(1000);
+  if (++loopCount %10000 == 0)  DEBUG(".");
 }
