@@ -54,7 +54,6 @@ void setup() {
 
 void loop() {
   static uint32_t loopCount = 0;
-//  DEBUG("> loop\n");
   brokerLink.loop();
   lowerEndstop.loop ();
   upperEndstop.loop ();
@@ -64,6 +63,5 @@ void loop() {
   FPositionSensor::loop();
   FDestinationSensor::loop();
   FEndstop::loop();
-//  delay(1000);
   if (++loopCount %10000 == 0)  DEBUG(".");
 }

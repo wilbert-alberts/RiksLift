@@ -1,10 +1,10 @@
 #include "LiftSystem.hh"
-#include "ScreenLogger.h"
+#include "MQTTLogger.h"
 
 #define ENTRY(s) logger.log(LogLevel::DEBUG, std::string("> FMoveUpDown::") + std::string(s))
 #define EXIT(s) logger.log(LogLevel::DEBUG, std::string("< FMoveUpDown::") + std::string(s))
 #define LOG(s) logger.log(LogLevel::DEBUG, std::string("= FMoveUpDown::") + std::string(s))
-static ScreenLogger logger = ScreenLogger();
+static MQTTLogger logger = MQTTLogger();
 
 typedef struct
 {
@@ -48,19 +48,30 @@ FPlanner::~FPlanner()
 
 void FPlanner::p_getMoveUpFastPlanning(Position current, Delay d, Position p)
 {
-  ENTRY("FPlanner::p_getMoveUpFastPlanning");
+  ENTRY(std::string("FPlanner::p_getMoveUpFastPlanning()"));
+  std::string currentStr = std::to_string(current.getPosition());
+  LOG(std::string("FPlanner::p_getMoveUpFastPlanning(), current: ")+currentStr);
+
   if (!endstopUpValid)
   {
-    throw std::invalid_argument("Cannot make planning for up movement if endstop up position has not been set.");
+    LOG ("*** Exc Cannot make planning for fast up movement if endstop up position has not been set");
+    throw std::invalid_argument("Cannot make planning for fast up movement if endstop up position has not been set.");
   }
+  
+  double targetPosition = endstopUp + upParameters.positionOffsetToGoSlow;
+  LOG(std::string("FPlanner::p_getMoveUpFastPlanning(), targetPosition: ")+std::to_string(targetPosition));
 
-  double targetPositon = endstopUp + upParameters.positionOffsetToGoSlow;
-  double distance = abs(targetPositon - current.getPosition());
+  double distance = abs(targetPosition - current.getPosition());
+  LOG(std::string("FPlanner::p_getMoveUpFastPlanning(), distance: ")+std::to_string(distance));
+
   double nominalTime = distance / upParameters.velocityFast;
+  LOG(std::string("FPlanner::p_getMoveUpFastPlanning(), nominalTime: ")+std::to_string(nominalTime));
+
   double totalTime = nominalTime + upParameters.moveTimeExceededTimeout;
+  LOG(std::string("FPlanner::p_getMoveUpFastPlanning(), totalTime: ")+std::to_string(totalTime));
 
   d.setDelay(totalTime);
-  p.setPosition(targetPositon);
+  p.setPosition(targetPosition);
   EXIT("FPlanner::p_getMoveUpFastPlanning");
 }
 
@@ -69,7 +80,8 @@ void FPlanner::p_getMoveUpSlowPlanning(Position current, Delay d, Position p)
   ENTRY("FPlanner::p_getMoveUpSlowPlanning");
   if (!endstopUpValid)
   {
-    throw std::invalid_argument("Cannot make planning for up movement if endstop up position has not been set.");
+    LOG ("*** Exc Cannot make planning for slow up movement if endstop up position has not been set");
+    throw std::invalid_argument("Cannot make planning for slow up movement if endstop up position has not been set.");
   }
 
   double targetPositon = endstopUp + upParameters.positionOffsetToStop;
@@ -87,7 +99,8 @@ void FPlanner::p_getMoveDownFastPlanning(Position current, Delay d, Position p)
   ENTRY("FPlanner::p_getMoveUpFastPlanning");
   if (!endstopDownValid)
   {
-    throw std::invalid_argument("Cannot make planning for up movement if endstop down position has not been set.");
+    LOG ("*** Exc Cannot make planning for fast down movement if endstop up position has not been set");
+    throw std::invalid_argument("Cannot make planning for fast down movement if endstop down position has not been set.");
   }
 
   double targetPositon = endstopDown + downParameters.positionOffsetToGoSlow;
@@ -105,7 +118,8 @@ void FPlanner::p_getMoveDownSlowPlanning(Position current, Delay d, Position p)
   ENTRY("FPlanner::p_getMoveDownSlowPlanning");
   if (!endstopDownValid)
   {
-    throw std::invalid_argument("Cannot make planning for up movement if endstop down position has not been set.");
+        LOG ("*** Exc Cannot make planning for slow down movement if endstop up position has not been set");
+    throw std::invalid_argument("Cannot make planning for slow down movement if endstop down position has not been set.");
   }
 
   double targetPositon = endstopDown + downParameters.positionOffsetToGoSlow;

@@ -32,8 +32,7 @@ public:
 		// Create log entry 
 		std::ostringstream logEntry; 
 		logEntry << "[" << timestamp << "] "
-				<< levelToString(level) << ": " << message 
-				<< std::endl; 
+				<< levelToString(level) << ": " << message;
 
 		// Output to stream 
 		logMessage(logEntry.str());

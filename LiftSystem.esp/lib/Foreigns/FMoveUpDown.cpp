@@ -3,14 +3,15 @@
 
 #include "FMoveUpDown.h"
 #include "MQTT_MoveUpDown.h"
-#include "ScreenLogger.h"
+// #include "ScreenLogger.h"
+#include "MQTTLogger.h"
 
 #include "brokerlink.h"
 
 #define ENTRY(s) logger.log(LogLevel::DEBUG, std::string("> FMoveUpDown::") + std::string(s))
 #define EXIT(s) logger.log(LogLevel::DEBUG, std::string("< FMoveUpDown::") + std::string(s))
 #define LOG(s) logger.log(LogLevel::DEBUG, std::string("= FMoveUpDown::") + std::string(s))
-static ScreenLogger logger = ScreenLogger();
+static MQTTLogger logger = MQTTLogger();
 
 void FMoveUpDown::blPublish(std::string body)
 {

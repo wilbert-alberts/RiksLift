@@ -34,10 +34,10 @@ void Simulation::setup ()
 
 void Simulation::loop ()
 {
-   if (loopCount++ % 5250 == 0) {  // corresponds with a move time of 10 seconds for the full stroke
+   if (loopCount++ % 500 == 0) {  
       if (movingForward || movingReverse)
       {
-         int8_t s = pwm*3;
+         int8_t s = pwm;
          if (s == 0) {
             if (!speedWarningGiven) {
                speedWarningGiven = true;

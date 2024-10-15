@@ -21,7 +21,7 @@ public:
 	// Destructor: Closes the log file 
 	~StreamLogger() {  } 
 
-	virtual void logMessage(const string& msg)
+	virtual void logMessage(const std::string& msg)
 	{
 		// Output to stream 
 		os << msg;
