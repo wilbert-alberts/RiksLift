@@ -6,7 +6,6 @@
 
 #include <iostream> 
 #include "StreamLogger.h"
-using namespace std; 
 
 class ScreenLogger: public StreamLogger { 
 public: 
