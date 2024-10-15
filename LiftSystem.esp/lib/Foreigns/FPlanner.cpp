@@ -1,4 +1,10 @@
 #include "LiftSystem.hh"
+#include "ScreenLogger.h"
+
+#define ENTRY(s) logger.log(LogLevel::DEBUG, std::string("> FMoveUpDown::") + std::string(s))
+#define EXIT(s) logger.log(LogLevel::DEBUG, std::string("< FMoveUpDown::") + std::string(s))
+#define LOG(s) logger.log(LogLevel::DEBUG, std::string("= FMoveUpDown::") + std::string(s))
+static ScreenLogger logger = ScreenLogger();
 
 typedef struct
 {
@@ -42,6 +48,7 @@ FPlanner::~FPlanner()
 
 void FPlanner::p_getMoveUpFastPlanning(Position current, Delay d, Position p)
 {
+  ENTRY("FPlanner::p_getMoveUpFastPlanning");
   if (!endstopUpValid)
   {
     throw std::invalid_argument("Cannot make planning for up movement if endstop up position has not been set.");
@@ -54,10 +61,12 @@ void FPlanner::p_getMoveUpFastPlanning(Position current, Delay d, Position p)
 
   d.setDelay(totalTime);
   p.setPosition(targetPositon);
+  EXIT("FPlanner::p_getMoveUpFastPlanning");
 }
 
 void FPlanner::p_getMoveUpSlowPlanning(Position current, Delay d, Position p)
 {
+  ENTRY("FPlanner::p_getMoveUpSlowPlanning");
   if (!endstopUpValid)
   {
     throw std::invalid_argument("Cannot make planning for up movement if endstop up position has not been set.");
@@ -70,10 +79,12 @@ void FPlanner::p_getMoveUpSlowPlanning(Position current, Delay d, Position p)
 
   d.setDelay(totalTime);
   p.setPosition(targetPositon);
+  EXIT("FPlanner::p_getMoveUpSlowPlanning");
 }
 
 void FPlanner::p_getMoveDownFastPlanning(Position current, Delay d, Position p)
 {
+  ENTRY("FPlanner::p_getMoveUpFastPlanning");
   if (!endstopDownValid)
   {
     throw std::invalid_argument("Cannot make planning for up movement if endstop down position has not been set.");
@@ -86,10 +97,12 @@ void FPlanner::p_getMoveDownFastPlanning(Position current, Delay d, Position p)
 
   d.setDelay(totalTime);
   p.setPosition(targetPositon);
+  EXIT("FPlanner::p_getMoveUpFastPlanning");
 }
 
 void FPlanner::p_getMoveDownSlowPlanning(Position current, Delay d, Position p)
 {
+  ENTRY("FPlanner::p_getMoveDownSlowPlanning");
   if (!endstopDownValid)
   {
     throw std::invalid_argument("Cannot make planning for up movement if endstop down position has not been set.");
@@ -102,6 +115,7 @@ void FPlanner::p_getMoveDownSlowPlanning(Position current, Delay d, Position p)
 
   d.setDelay(totalTime);
   p.setPosition(targetPositon);
+  EXIT("FPlanner::p_getMoveDownSlowPlanning");
 }
 
 void FPlanner::p_setEndstopUpPosition(Position p)
