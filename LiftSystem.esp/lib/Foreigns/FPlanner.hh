@@ -18,10 +18,10 @@ public:
   virtual void p_setEndstopDownPosition(Position p);
 
 private:
-  bool endstopUpValid;
-  double endstopUp;
-  bool endstopDownValid;
-  double endstopDown;
+  static bool endstopUpValid;
+  static double endstopUp;
+  static bool endstopDownValid;
+  static double endstopDown;
 };
 
 #endif

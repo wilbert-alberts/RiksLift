@@ -12,7 +12,7 @@
 #include "identity.h"
 #include "brokerlink.h"
 
-#define _DEBUG 1
+#define _DEBUG 0
 #include "debug.h"
 
 const int      MQTTPort      (1883);

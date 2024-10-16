@@ -29,6 +29,7 @@ FMoveUpDown::FMoveUpDown()
     }
     else
     {
+        LOG("*** Exc Should not create more than one FMoveUpDown");
         throw new std::logic_error("Should not create more than one FMoveUpDown");
     }
     EXIT("FMoveUpDown ()");
@@ -44,7 +45,10 @@ void FMoveUpDown ::setSystem(LiftSystem *sys)
 {
     ENTRY("setSystem()");
     if (sys == nullptr)
+    {
+        LOG("*** Exc FMoveUpDown ::setSystem does not accept nullptr for sys");
         throw new std::invalid_argument("FMoveUpDown ::setSystem does not accept a nullptr for system.");
+    }
     this->system = sys;
     EXIT("setSystem()");
 }
@@ -54,7 +58,10 @@ void FMoveUpDown::connect()
     ENTRY("connect()");
 
     if (system == nullptr)
+    {
+        LOG("*** Exc FMoveUpDown ::connect expects system to be set");
         throw new std::logic_error("FMoveUpDown::connect expects system to be set.");
+    }
 
     system->mudArmor.p.out.moveAborted = [this]
     { this->moveAborted(); };
@@ -62,7 +69,6 @@ void FMoveUpDown::connect()
     { this->moveFailed(); };
     system->mudArmor.p.out.moveFinished = [this]
     { this->moveFinished(); };
-
 
     String topicStr = cmdTopic.c_str();
     brokerLink.subscribe(topicStr, FMoveUpDown::brokerlinkCB, false);

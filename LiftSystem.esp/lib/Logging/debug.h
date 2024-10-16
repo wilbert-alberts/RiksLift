@@ -25,8 +25,11 @@ extern const char* toCCP (bool b);
 #if _DEBUG == 1
 #define DEBUG(...) DebugReal (__VA_ARGS__)
 extern void DebugReal (const char *fmt, ...);
+#define HOLD(...) HoldReal (__VA_ARGS__)
+extern void HoldReal (const char *fmt, ...);
 #elif _DEBUG == 0
 #define DEBUG(...) {}
+#define HOLD(...) {}
 #else
 #error Debug.h: _DEBUG is not defined as 0 or 1
 #endif  // if _DEBUG==1
