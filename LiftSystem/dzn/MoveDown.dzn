@@ -46,9 +46,9 @@ component MoveDown {
         Position currentPosition;
 
         [ state.IDLE ] on p.moveDown(): { 
-            positionSensor.getCurrentPosition(currentPosition);
-            planner.getMoveDownFastPlanning(currentPosition, fastDelay, fastPosition);
-            planner.getMoveDownSlowPlanning(currentPosition, slowDelay, slowPosition);
+            positionSensor.getCurrentPosition($&currentPosition$);
+            planner.getMoveDownFastPlanning(currentPosition, $&fastDelay$, $&fastPosition$);
+            planner.getMoveDownSlowPlanning(currentPosition, $&slowDelay$, $&slowPosition$);
            
             timer.setTimer($fastDelay.plus(slowDelay)$);
             fastDestinationSensor.setDestination(fastPosition);

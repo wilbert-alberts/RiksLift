@@ -112,7 +112,7 @@ component HomeUp {
             motor.stop();
             timer.setTimer($Delay(HOMING_STOPPING_SLOW_IN)$);
 
-            positionSensor.getLastEndstopPosition(position);
+            positionSensor.getLastEndstopPosition($&position$);
             planner.setEndstopUpPosition(position);
 
             state = State.STOPPING_SLOW_IN;

@@ -44,8 +44,8 @@ void setup() {
   fMoveUpDown->setSystem(liftSystem.get ());
   liftSystem->huEndstop.setLocation(UPPER_FLOOR);
   liftSystem->hdEndstop.setLocation(LOWER_FLOOR);
-  liftSystem->huPositionSensor.setEndstopToMonitor(&liftSystem->huEndstop);
-  liftSystem->hdPositionSensor.setEndstopToMonitor(&liftSystem->hdEndstop);
+  liftSystem->huPositionSensor.setEndstopToMonitor(UPPER_FLOOR, &liftSystem->huEndstop);
+  liftSystem->hdPositionSensor.setEndstopToMonitor(LOWER_FLOOR, &liftSystem->hdEndstop);
   fMoveUpDown->connect();
 }
 

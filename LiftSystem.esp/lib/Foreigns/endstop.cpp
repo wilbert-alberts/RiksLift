@@ -69,6 +69,8 @@ void Endstop::checkChanged ()
 #endif
    if ((active != previous) && expired) {
       // a transition beyond debounce
+      DEBUG ("   Endstop checkChanged: %s endstop changed to %s\n",
+           this==&upperEndstop?"upper":"lower", active?"inside":"outside"); 
       previous = active;
       latestTransitionTime = now;
 

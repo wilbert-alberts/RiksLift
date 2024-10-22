@@ -3,6 +3,9 @@
 #include "liftencoder.h"
 #include "brokerlink.h"
 
+#define _DEBUG 1
+#include "debug.h"
+
 #include <algorithm>
 
 double FPositionSensor::currentPosition(0.0);
@@ -10,7 +13,6 @@ double FPositionSensor::currentPosition(0.0);
 std::vector<FPositionSensor *> FPositionSensor::instances;
 
 void reportPosition(double pos);
-
 
 FPositionSensor::FPositionSensor(dzn::locator const &locator)
     : skel::FPositionSensor(locator), endstopToMonitor(nullptr), endstopPosition(0.0), previousEndstopState(IEndstop::State::UNKNOWN)
@@ -27,19 +29,24 @@ FPositionSensor::~FPositionSensor()
   }
 }
 
-void FPositionSensor::setEndstopToMonitor(FEndstop *endstop)
+void FPositionSensor::setEndstopToMonitor(Location location, FEndstop *endstop)
 {
+  this->location = location;
   endstopToMonitor = endstop;
 }
 
-void FPositionSensor::p_getCurrentPosition(Position posInM)
+void FPositionSensor::p_getCurrentPosition(Position* posInM)
 {
-  posInM.setPosition(FPositionSensor::currentPosition);
+  DEBUG(">  FPositionSensor::p_getCurrentPosition ()");
+  posInM->setPosition(FPositionSensor::currentPosition);
+  DEBUG("<>>  FPositionSensor::p_getCurrentPosition (posInM = %f\n)", posInM->getPosition());
 }
 
-void FPositionSensor::p_getLastEndstopPosition(Position posInM)
+void FPositionSensor::p_getLastEndstopPosition(Position* posInM)
 {
-  posInM.setPosition(FPositionSensor::endstopPosition);
+  DEBUG(">  FPositionSensor::p_getLastEndstopPosition()\n");
+  posInM->setPosition(FPositionSensor::endstopPosition);
+  DEBUG("<  FPositionSensor::p_getLastEndstopPosition (posInM = %f)\n", posInM->getPosition());
 }
 
 void FPositionSensor::loop()
@@ -75,12 +82,21 @@ double FPositionSensor::getCurrentPosition()
 
 bool FPositionSensor::captureEndstop()
 {
+  static uint32_t prevReport = 0;
   bool r = false;
   if (endstopToMonitor != nullptr)
   {
+
     ::IEndstop::State currentEndStopState = endstopToMonitor->p_getState();
+    // if (millis () - prevReport > 500 && location == Location::UPPER_FLOOR) {
+    //     prevReport  = millis ();
+    //     DEBUG (">< FPositionSensor::captureEndstop: current endstop state = %d\n", currentEndStopState);
+    // }
+
     if (currentEndStopState != previousEndstopState)
     {
+      DEBUG("   FPositionSensor::captureEndstop state change; previous state = %d, new state = %d, at position %f\n",
+            previousEndstopState, currentEndStopState, currentPosition);
       endstopPosition = currentPosition;
       previousEndstopState = currentEndStopState;
       r = true;

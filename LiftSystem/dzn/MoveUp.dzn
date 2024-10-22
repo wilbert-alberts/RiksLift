@@ -46,9 +46,9 @@ component MoveUp {
         Position currentPosition;
 
         [ state.IDLE ] on p.moveUp(): { 
-            positionSensor.getCurrentPosition(currentPosition);
-            planner.getMoveUpFastPlanning(currentPosition, fastDelay, fastPosition);
-            planner.getMoveUpSlowPlanning(currentPosition, slowDelay, slowPosition);
+            positionSensor.getCurrentPosition($&currentPosition$);
+            planner.getMoveUpFastPlanning(currentPosition, $&fastDelay$, $&fastPosition$);
+            planner.getMoveUpSlowPlanning(currentPosition, $&slowDelay$, $&slowPosition$);
             
             timer.setTimer($fastDelay.plus(slowDelay)$);
             fastDestinationSensor.setDestination(fastPosition);

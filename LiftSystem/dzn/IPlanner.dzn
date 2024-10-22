@@ -2,11 +2,11 @@ import Types.dzn;
 
 interface IPlanner
 {
-    in void getMoveUpFastPlanning(Position current, Delay d, Position p);
-    in void getMoveUpSlowPlanning(Position current, Delay d, Position p);
+    in void getMoveUpFastPlanning(Position current, DelayOut d, PositionOut p);
+    in void getMoveUpSlowPlanning(Position current, DelayOut d, PositionOut p);
 
-    in void getMoveDownFastPlanning(Position current, Delay d, Position p);
-    in void getMoveDownSlowPlanning(Position current, Delay d, Position p);
+    in void getMoveDownFastPlanning(Position current, DelayOut d, PositionOut p);
+    in void getMoveDownSlowPlanning(Position current, DelayOut d, PositionOut p);
 
     in  void setEndstopUpPosition(Position p);
     in  void setEndstopDownPosition(Position p);

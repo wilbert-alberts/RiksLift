@@ -2,9 +2,9 @@ import Types.dzn;
 
 interface IPositionSensor
 {
-    in void getCurrentPosition(Position posInM);
-    in void getLastEndstopPosition(Position posInM);
-
+    in void getCurrentPosition(PositionOut posInM);
+    in void getLastEndstopPosition(PositionOut posInM);
+   
     behavior {
         on getCurrentPosition, getLastEndstopPosition: {}
     }

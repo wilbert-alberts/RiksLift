@@ -21,6 +21,7 @@ FEndstop::~FEndstop()
 
 ::IEndstop::State FEndstop::p_getState()
 {
+  // DEBUG (">< FEndstop::pGetState: changed state; new lastState = %d\n", lastState);
   return lastState;
 }
 

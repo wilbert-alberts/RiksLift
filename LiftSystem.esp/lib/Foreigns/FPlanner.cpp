@@ -6,6 +6,9 @@
 #define LOG(s) logger.log(LogLevel::DEBUG, std::string("= FMoveUpDown::") + std::string(s))
 static MQTTLogger logger = MQTTLogger();
 
+#define _DEBUG 1
+#include "debug.h"
+
 // static members FPlanner
 bool FPlanner::endstopUpValid = false;
 double FPlanner::endstopUp = 0.0;
@@ -52,7 +55,7 @@ FPlanner::~FPlanner()
 {
 }
 
-void FPlanner::p_getMoveUpFastPlanning(Position current, Delay d, Position p)
+void FPlanner::p_getMoveUpFastPlanning(Position current, Delay* d, Position* p)
 {
   ENTRY(std::string("FPlanner::p_getMoveUpFastPlanning()"));
 
@@ -77,12 +80,12 @@ void FPlanner::p_getMoveUpFastPlanning(Position current, Delay d, Position p)
   double totalTime = nominalTime + upParameters.moveTimeExceededTimeout;
   LOG(std::string("FPlanner::p_getMoveUpFastPlanning(), totalTime: ") + std::to_string(totalTime));
 
-  d.setDelay(totalTime);
-  p.setPosition(targetPosition);
+  d->setDelay(totalTime);
+  p->setPosition(targetPosition);
   EXIT("FPlanner::p_getMoveUpFastPlanning");
 }
 
-void FPlanner::p_getMoveUpSlowPlanning(Position current, Delay d, Position p)
+void FPlanner::p_getMoveUpSlowPlanning(Position current, Delay* d, Position* p)
 {
   ENTRY("FPlanner::p_getMoveUpSlowPlanning");
   if (!endstopUpValid)
@@ -96,12 +99,12 @@ void FPlanner::p_getMoveUpSlowPlanning(Position current, Delay d, Position p)
   double nominalTime = distance / upParameters.velocitySlow;
   double totalTime = nominalTime + upParameters.moveTimeExceededTimeout;
 
-  d.setDelay(totalTime);
-  p.setPosition(targetPositon);
+  d->setDelay(totalTime);
+  p->setPosition(targetPositon);
   EXIT("FPlanner::p_getMoveUpSlowPlanning");
 }
 
-void FPlanner::p_getMoveDownFastPlanning(Position current, Delay d, Position p)
+void FPlanner::p_getMoveDownFastPlanning(Position current, Delay* d, Position* p)
 {
   ENTRY("FPlanner::p_getMoveUpFastPlanning");
   if (!endstopDownValid)
@@ -115,12 +118,12 @@ void FPlanner::p_getMoveDownFastPlanning(Position current, Delay d, Position p)
   double nominalTime = distance / downParameters.velocityFast;
   double totalTime = nominalTime + downParameters.moveTimeExceededTimeout;
 
-  d.setDelay(totalTime);
-  p.setPosition(targetPositon);
+  d->setDelay(totalTime);
+  p->setPosition(targetPositon);
   EXIT("FPlanner::p_getMoveUpFastPlanning");
 }
 
-void FPlanner::p_getMoveDownSlowPlanning(Position current, Delay d, Position p)
+void FPlanner::p_getMoveDownSlowPlanning(Position current, Delay* d, Position* p)
 {
   ENTRY("FPlanner::p_getMoveDownSlowPlanning");
   if (!endstopDownValid)
@@ -134,19 +137,23 @@ void FPlanner::p_getMoveDownSlowPlanning(Position current, Delay d, Position p)
   double nominalTime = distance / downParameters.velocitySlow;
   double totalTime = nominalTime + downParameters.moveTimeExceededTimeout;
 
-  d.setDelay(totalTime);
-  p.setPosition(targetPositon);
+  d->setDelay(totalTime);
+  p->setPosition(targetPositon);
   EXIT("FPlanner::p_getMoveDownSlowPlanning");
 }
 
 void FPlanner::p_setEndstopUpPosition(Position p)
 {
+  DEBUG((">  FPlanner::p_setEndstopUpPosition(p: " + std::to_string(p.getPosition()) + ")\n").c_str());
   endstopUp = p.getPosition();
   endstopUpValid = true;
+  DEBUG("<  FPlanner::p_setEndstopUpPosition()\n");
 }
 
 void FPlanner::p_setEndstopDownPosition(Position p)
 {
+  DEBUG((">  FPlanner::p_setEndstopDownPosition(p: " + std::to_string(p.getPosition()) + ")\n").c_str());
   endstopDown = p.getPosition();
   endstopDownValid = true;
+  DEBUG("<  FPlanner::p_setEndstopDownPosition()\n");
 }

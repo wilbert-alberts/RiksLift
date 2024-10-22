@@ -1,6 +1,8 @@
 #ifndef FPOSITIONSENSOR_HH
 #define FPOSITIONSENSOR_HH
 
+#include "Location.h"
+
 class FEndstop;
 
 class FPositionSensor : public skel::FPositionSensor
@@ -8,10 +10,10 @@ class FPositionSensor : public skel::FPositionSensor
 public:
   FPositionSensor(dzn::locator const &locator);
   virtual ~FPositionSensor();
-  void setEndstopToMonitor(FEndstop* endstop);
+  void setEndstopToMonitor(Location location, FEndstop* endstop);
 
-  virtual void p_getCurrentPosition(Position posInM);
-  virtual void p_getLastEndstopPosition(Position posInM);
+  virtual void p_getCurrentPosition(Position* posInM);
+  virtual void p_getLastEndstopPosition(Position* posInM);
 
   static void loop();
 
@@ -23,6 +25,7 @@ private:
   // endstop changed state
   bool   captureEndstop();
   FEndstop* endstopToMonitor;
+  Location  location;
   double endstopPosition;
   ::IEndstop::State   previousEndstopState;
 
