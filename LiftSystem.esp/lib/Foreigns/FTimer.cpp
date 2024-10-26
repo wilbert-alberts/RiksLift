@@ -21,9 +21,9 @@ FTimer::~FTimer()
     instances.erase(pos);
 };
 
-void FTimer::p_setTimer(Delay delayInS)
+void FTimer::p_setTimer(double delayInS)
 {
-  delayTimeInMs = (unsigned long)(1000.0 * delayInS.getDelay());
+  delayTimeInMs = (unsigned long)(1000.0 * delayInS);
   startTimeInMs = millis();
   armed = true;
 }

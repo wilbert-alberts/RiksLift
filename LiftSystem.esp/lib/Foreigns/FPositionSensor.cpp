@@ -1,5 +1,4 @@
 #include "LiftSystem.hh"
-#include "Position.hh"
 #include "liftencoder.h"
 #include "brokerlink.h"
 
@@ -35,18 +34,18 @@ void FPositionSensor::setEndstopToMonitor(Location location, FEndstop *endstop)
   endstopToMonitor = endstop;
 }
 
-void FPositionSensor::p_getCurrentPosition(Position* posInM)
+void FPositionSensor::p_getCurrentPosition(double* posInM)
 {
   DEBUG(">  FPositionSensor::p_getCurrentPosition ()");
-  posInM->setPosition(FPositionSensor::currentPosition);
-  DEBUG("<>>  FPositionSensor::p_getCurrentPosition (posInM = %f\n)", posInM->getPosition());
+  *posInM = FPositionSensor::currentPosition;
+  DEBUG("<>>  FPositionSensor::p_getCurrentPosition (posInM = %f\n)", *posInM);
 }
 
-void FPositionSensor::p_getLastEndstopPosition(Position* posInM)
+void FPositionSensor::p_getLastEndstopPosition(double* posInM)
 {
   DEBUG(">  FPositionSensor::p_getLastEndstopPosition()\n");
-  posInM->setPosition(FPositionSensor::endstopPosition);
-  DEBUG("<  FPositionSensor::p_getLastEndstopPosition (posInM = %f)\n", posInM->getPosition());
+  *posInM = FPositionSensor::endstopPosition;
+  DEBUG("<  FPositionSensor::p_getLastEndstopPosition (posInM = %f)\n", *posInM);
 }
 
 void FPositionSensor::loop()

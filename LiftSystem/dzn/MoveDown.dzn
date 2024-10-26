@@ -50,7 +50,7 @@ component MoveDown {
             planner.getMoveDownFastPlanning(currentPosition, $&fastDelay$, $&fastPosition$);
             planner.getMoveDownSlowPlanning(currentPosition, $&slowDelay$, $&slowPosition$);
            
-            timer.setTimer($fastDelay.plus(slowDelay)$);
+            timer.setTimer($fastDelay + slowDelay$);
             fastDestinationSensor.setDestination(fastPosition);
             slowDestinationSensor.setDestination(slowPosition);
 
@@ -82,7 +82,7 @@ component MoveDown {
 
             motor.stop();
 
-            timer.setTimer($Delay(TIMEOUT_ABORT_WHILE_MOVING_FAST)$);
+            timer.setTimer($TIMEOUT_ABORT_WHILE_MOVING_FAST$);
             state = State.ABORTING;
         }
 
@@ -93,7 +93,7 @@ component MoveDown {
 
             motor.stop();
 
-            timer.setTimer($Delay(TIMEOUT_ABORT_WHILE_MOVING_SLOW)$);
+            timer.setTimer($TIMEOUT_ABORT_WHILE_MOVING_SLOW$);
             state = State.ABORTING;
         }
 
@@ -115,7 +115,7 @@ component MoveDown {
             timer.cancelTimer();
             fastDestinationSensor.cancelDestination();
 
-            timer.setTimer($Delay(TIMEOUT_STOPPING_AFTER_FAILING)$);
+            timer.setTimer($TIMEOUT_STOPPING_AFTER_FAILING$);
             state = State.FAILING_STOPPING;
         }
 
@@ -126,7 +126,7 @@ component MoveDown {
             fastDestinationSensor.cancelDestination();
             slowDestinationSensor.cancelDestination();
 
-            timer.setTimer($Delay(TIMEOUT_STOPPING_AFTER_FAILING)$);
+            timer.setTimer($TIMEOUT_STOPPING_AFTER_FAILING$);
             state = State.FAILING_STOPPING; 
         }
 
@@ -136,7 +136,7 @@ component MoveDown {
 
             slowDestinationSensor.cancelDestination();
 
-            timer.setTimer($Delay(TIMEOUT_STOPPING_AFTER_FAILING)$);
+            timer.setTimer($TIMEOUT_STOPPING_AFTER_FAILING$);
             state = State.FAILING_STOPPING; 
         }
 
