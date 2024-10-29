@@ -11,20 +11,20 @@
 
 class LiftEncoder {
   public:
+   static constexpr float MeterPerIncrement = 0.000346008;
    LiftEncoder () {}
    ~LiftEncoder () {}
    bool setup ();
    float getPosition ();
-   int32_t getIncPosition ();
-   void setPosition (float position);
-   void setPosition (int32_t position);
-   void setOffset (float offset);
-   void setOffset (int32_t offset);
+
    static float toMeters (int32_t increments);
    static int32_t toIncrements (float meters);
-  private:
-   static int32_t previousPosition;
+   static bool isEqual (float p1, float p2);
 
+  private:
+   int32_t getIncPosition ();
+   static int32_t previousPosition;
+   // static volatile int32_t position  // is a static volatile int32_t within liftencoder.cpp because it needs to be accessed by an int handler
 };
 
 extern LiftEncoder liftEncoder;

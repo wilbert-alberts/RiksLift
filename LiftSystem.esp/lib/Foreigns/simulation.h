@@ -49,9 +49,9 @@ class Simulation {
 
   private:
    bool emoActive;  
-   int32_t position = 0;   // used for simulation; represents sensor readout
-   int32_t previousPosition = LiftEncoder::toIncrements (10.0);
-   int32_t offset = 0;     // remember offset
+   float position = 0;   // used for simulation; represents sensor readout
+   float previousPosition = 10.0;
+   float offset = 0;     // remember offset
    int8_t pwm = 0;        // current pwm value
    bool movingForward;
    bool previousForward;

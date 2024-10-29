@@ -10,21 +10,23 @@
 #define _DEBUG 0
 #include "debug.h"
 
-// encoder conversion factor
-#define METER_PER_INCREMENT   (0.000346008)
 
 LiftEncoder liftEncoder;
 
 int32_t LiftEncoder::toIncrements (float meters) 
 {
-     return int32_t (meters / METER_PER_INCREMENT);
+     return int32_t (meters / MeterPerIncrement);
 }
 
 float LiftEncoder::toMeters (int32_t increments)
 {
-    return (float (increments) * METER_PER_INCREMENT); 
+    return (float (increments) * MeterPerIncrement); 
 }
 
+bool LiftEncoder::isEqual (float p1, float p2)
+{
+  return (fabs (p1-p2) < MeterPerIncrement);
+}
 
 static volatile int32_t position = 0;
 static      uint8_t encA     = GPIO_ENC_A;
@@ -89,8 +91,8 @@ int32_t LiftEncoder::getIncPosition ()
 #else
     pos = toIncrements (sim.getPosition ());
 #endif
-    if (pos != previousPosition) {
-       DEBUG (">< LiftEncoder::getPosition: pos = %f m \n", toMeters (pos));
+    if (!isEqual (pos,  previousPosition)) {
+       DEBUG (">< LiftEncoder::getIncPosition: pos = %d inc, %f m \n", pos, toMeters (pos));
        previousPosition = pos;
     }
     return pos;
@@ -107,29 +109,13 @@ float LiftEncoder::getPosition ()
   return fpos;
 }
 
-void LiftEncoder::setPosition (int32_t position)
-{
-   setOffset (position - getIncPosition ());
-}
 
-void LiftEncoder::setPosition (float position)
-{
-   setPosition (toIncrements (position));
-}
-
-void LiftEncoder::setOffset (float offset)
-{
-   setOffset (toIncrements (offset));
-}
-
-void LiftEncoder::setOffset   (int32_t offset)
-{
-#if SIMULATION == 0  
-   int32_t pos = getIncPosition ();
-   noInterrupts ();   
-   position = pos + offset;
-   interrupts ();
-#else
-   sim.setOffset (toMeters (offset));
-#endif
-}
+// void LiftEncoder::setOffset (float offset)
+// {
+// #if SIMULATION == 0  //    noInterrupts ();   
+//    position += toIncrements (offset);
+//    interrupts ();
+// #else
+//    sim.setOffset (offset));
+// #endif
+// }

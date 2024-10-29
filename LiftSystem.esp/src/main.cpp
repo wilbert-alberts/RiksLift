@@ -28,7 +28,7 @@ std::unique_ptr<FMoveUpDown> fMoveUpDown;
 
 void setup() {
   Serial.begin(115200);
-  HOLD("setup\n");
+  DEBUG ("setup\n");
 
   lowerEndstop.setup (GPIO_LOWER_ENDSTOP);
   upperEndstop.setup (GPIO_UPPER_ENDSTOP);
