@@ -1,5 +1,5 @@
-extern Delay $Delay$;
-extern DelayOut $Delay*$;
+extern Delay $double$;
+extern DelayOut $double*$;
 
-extern Position $Position$;
-extern PositionOut $Position*$;
+extern Position $double$;
+extern PositionOut $double*$;

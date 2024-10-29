@@ -25,10 +25,10 @@ FDestinationSensor::~FDestinationSensor()
     instances.erase(pos);
 };
 
-void FDestinationSensor::p_setDestination(Position posInM)
+void FDestinationSensor::p_setDestination(double posInM)
 {
-  DEBUG(">  FDestinationSensor::p_setDestination(%f)\n", posInM.getPosition());
-  destination = posInM.getPosition();
+  DEBUG(">  FDestinationSensor::p_setDestination(%f)\n", posInM);
+  destination = posInM;
   armed = true;
   DEBUG("<  FDestinationSensor::p_setDestination()\n" );
 }

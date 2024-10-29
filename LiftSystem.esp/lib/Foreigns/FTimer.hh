@@ -9,7 +9,7 @@ public:
   FTimer(dzn::locator const &locator);
   virtual ~FTimer();
 
-  virtual void p_setTimer(Delay delayInS);
+  virtual void p_setTimer(double delayInS);
   virtual void p_cancelTimer();
 
   void checkElapsed();

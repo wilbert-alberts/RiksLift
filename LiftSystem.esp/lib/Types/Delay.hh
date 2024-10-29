@@ -18,24 +18,4 @@
 #define HOMING_FAILING_STOPPING (10.0)
 #define HOMING_ABORTING (2.0)
 
-class Delay {
-
-public:
-    Delay() {};
-    Delay(double v): delay(v) {};
-    virtual ~Delay() {}
-
-    double getDelay() { return delay; }
-    void setDelay(double delay) {
-        this->delay = delay;
-    }
-    Delay plus(const Delay& other) {
-        return Delay(other.delay + this->delay);
-    }
-
-private:
-    double delay;
-};
-
-
 #endif
