@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <sstream>
 #include "LiftSystem.hh"
 #include "FMoveUpDown.h"
 #include "dzn/runtime.hh"
@@ -26,22 +27,28 @@ dzn::runtime rt;
 std::unique_ptr<LiftSystem> liftSystem;
 std::unique_ptr<FMoveUpDown> fMoveUpDown;
 
-void setup() {
-  Serial.begin(115200);
-  DEBUG ("setup\n");
+std::string debugBuffer;
+std::stringstream debugStream(debugBuffer);
 
-  lowerEndstop.setup (GPIO_LOWER_ENDSTOP);
-  upperEndstop.setup (GPIO_UPPER_ENDSTOP);
-  liftEncoder.setup ();
-  sim.setup ();
-  vevorVFD.setup ();
+void setup()
+{
+  Serial.begin(115200);
+  DEBUG("setup\n");
+
+  lowerEndstop.setup(GPIO_LOWER_ENDSTOP);
+  upperEndstop.setup(GPIO_UPPER_ENDSTOP);
+  liftEncoder.setup();
+  sim.setup();
+  vevorVFD.setup();
   brokerLink.setup();
 
   loc.set(rt);
+  loc.set(debugStream);
+
   liftSystem = std::unique_ptr<LiftSystem>(new LiftSystem(loc));
-  fMoveUpDown = std::unique_ptr<FMoveUpDown>( new FMoveUpDown());
+  fMoveUpDown = std::unique_ptr<FMoveUpDown>(new FMoveUpDown());
   liftSystem->fLog.setComponentID("mudArmor");
-  fMoveUpDown->setSystem(liftSystem.get ());
+  fMoveUpDown->setSystem(liftSystem.get());
   liftSystem->huEndstop.setLocation(UPPER_FLOOR);
   liftSystem->hdEndstop.setLocation(LOWER_FLOOR);
   liftSystem->huPositionSensor.setEndstopToMonitor(UPPER_FLOOR, &liftSystem->huEndstop);
@@ -49,16 +56,25 @@ void setup() {
   fMoveUpDown->connect();
 }
 
-void loop() {  
+void loop()
+{
   static uint32_t loopCount = 0;
   brokerLink.loop();
-  lowerEndstop.loop ();
-  upperEndstop.loop ();
-  sim.loop ();
-  vevorVFD.loop ();
+  lowerEndstop.loop();
+  upperEndstop.loop();
+  sim.loop();
+  vevorVFD.loop();
   FTimer::loop();
   FPositionSensor::loop();
   FDestinationSensor::loop();
   FEndstop::loop();
-  if (++loopCount %10000 == 0)  DEBUG(".");
+  if (++loopCount % 10000 == 0)
+    DEBUG(".");
+  if (++loopCount % 10000 == 0)
+  {
+    DEBUG("-----------------------debugBuffer-----------------------\n");
+    DEBUG(debugBuffer.c_str());
+    DEBUG("-----------------------debugBuffer-----------------------\n");
+    debugBuffer = "";
+  }
 }
