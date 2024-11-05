@@ -70,11 +70,11 @@ void loop()
   FEndstop::loop();
   if (++loopCount % 10000 == 0)
     DEBUG(".");
-  if (++loopCount % 10000 == 0)
+  if (debugBuffer.size() >0)
   {
-    DEBUG("-----------------------debugBuffer-----------------------\n");
+    DEBUG(">>>>>>>>>>>>>>>>>>>>>>>debugBuffer-----------------------\n");
     DEBUG(debugBuffer.c_str());
-    DEBUG("-----------------------debugBuffer-----------------------\n");
+    DEBUG("<<<<<<<<<<<<<<<<<<<<<<<debugBuffer-----------------------\n");
     debugBuffer = "";
   }
 }
