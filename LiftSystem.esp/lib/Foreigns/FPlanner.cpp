@@ -55,11 +55,11 @@ FPlanner::~FPlanner()
 {
 }
 
-void FPlanner::p_getMoveUpFastPlanning(Position current, Delay* d, Position* p)
+void FPlanner::p_getMoveUpFastPlanning(double current, double* delay, double* position)
 {
   ENTRY(std::string("FPlanner::p_getMoveUpFastPlanning()"));
 
-  std::string currentStr = std::to_string(current.getPosition());
+  std::string currentStr = std::to_string(current);
   LOG(std::string("FPlanner::p_getMoveUpFastPlanning(), current: ") + currentStr);
 
   if (!endstopUpValid)
@@ -71,7 +71,7 @@ void FPlanner::p_getMoveUpFastPlanning(Position current, Delay* d, Position* p)
   double targetPosition = endstopUp + upParameters.positionOffsetToGoSlow;
   LOG(std::string("FPlanner::p_getMoveUpFastPlanning(), targetPosition: ") + std::to_string(targetPosition));
 
-  double distance = abs(targetPosition - current.getPosition());
+  double distance = abs(targetPosition - current);
   LOG(std::string("FPlanner::p_getMoveUpFastPlanning(), distance: ") + std::to_string(distance));
 
   double nominalTime = distance / upParameters.velocityFast;
@@ -80,12 +80,12 @@ void FPlanner::p_getMoveUpFastPlanning(Position current, Delay* d, Position* p)
   double totalTime = nominalTime + upParameters.moveTimeExceededTimeout;
   LOG(std::string("FPlanner::p_getMoveUpFastPlanning(), totalTime: ") + std::to_string(totalTime));
 
-  d->setDelay(totalTime);
-  p->setPosition(targetPosition);
+  *delay = totalTime;
+  *position = targetPosition;
   EXIT("FPlanner::p_getMoveUpFastPlanning");
 }
 
-void FPlanner::p_getMoveUpSlowPlanning(Position current, Delay* d, Position* p)
+void FPlanner::p_getMoveUpSlowPlanning(double current, double* delay, double* position)
 {
   ENTRY("FPlanner::p_getMoveUpSlowPlanning");
   if (!endstopUpValid)
@@ -95,16 +95,16 @@ void FPlanner::p_getMoveUpSlowPlanning(Position current, Delay* d, Position* p)
   }
 
   double targetPositon = endstopUp + upParameters.positionOffsetToStop;
-  double distance = abs(targetPositon - current.getPosition());
+  double distance = abs(targetPositon - current);
   double nominalTime = distance / upParameters.velocitySlow;
   double totalTime = nominalTime + upParameters.moveTimeExceededTimeout;
 
-  d->setDelay(totalTime);
-  p->setPosition(targetPositon);
+  *delay = totalTime;
+  *position = targetPositon;
   EXIT("FPlanner::p_getMoveUpSlowPlanning");
 }
 
-void FPlanner::p_getMoveDownFastPlanning(Position current, Delay* d, Position* p)
+void FPlanner::p_getMoveDownFastPlanning(double current, double* delay, double* position)
 {
   ENTRY("FPlanner::p_getMoveUpFastPlanning");
   if (!endstopDownValid)
@@ -114,16 +114,16 @@ void FPlanner::p_getMoveDownFastPlanning(Position current, Delay* d, Position* p
   }
 
   double targetPositon = endstopDown + downParameters.positionOffsetToGoSlow;
-  double distance = abs(targetPositon - current.getPosition());
+  double distance = abs(targetPositon - current);
   double nominalTime = distance / downParameters.velocityFast;
   double totalTime = nominalTime + downParameters.moveTimeExceededTimeout;
 
-  d->setDelay(totalTime);
-  p->setPosition(targetPositon);
+  *delay = totalTime;
+  *position = targetPositon;
   EXIT("FPlanner::p_getMoveUpFastPlanning");
 }
 
-void FPlanner::p_getMoveDownSlowPlanning(Position current, Delay* d, Position* p)
+void FPlanner::p_getMoveDownSlowPlanning(double current, double* delay, double* position)
 {
   ENTRY("FPlanner::p_getMoveDownSlowPlanning");
   if (!endstopDownValid)
@@ -133,27 +133,27 @@ void FPlanner::p_getMoveDownSlowPlanning(Position current, Delay* d, Position* p
   }
 
   double targetPositon = endstopDown + downParameters.positionOffsetToGoSlow;
-  double distance = abs(targetPositon - current.getPosition());
+  double distance = abs(targetPositon - current);
   double nominalTime = distance / downParameters.velocitySlow;
   double totalTime = nominalTime + downParameters.moveTimeExceededTimeout;
 
-  d->setDelay(totalTime);
-  p->setPosition(targetPositon);
+  *delay = totalTime;
+  *position = targetPositon;
   EXIT("FPlanner::p_getMoveDownSlowPlanning");
 }
 
-void FPlanner::p_setEndstopUpPosition(Position p)
+void FPlanner::p_setEndstopUpPosition(double position)
 {
-  DEBUG((">  FPlanner::p_setEndstopUpPosition(p: " + std::to_string(p.getPosition()) + ")\n").c_str());
-  endstopUp = p.getPosition();
+  DEBUG((">  FPlanner::p_setEndstopUpPosition(position: " + std::to_string(position) + ")\n").c_str());
+  endstopUp = position;
   endstopUpValid = true;
   DEBUG("<  FPlanner::p_setEndstopUpPosition()\n");
 }
 
-void FPlanner::p_setEndstopDownPosition(Position p)
+void FPlanner::p_setEndstopDownPosition(double position)
 {
-  DEBUG((">  FPlanner::p_setEndstopDownPosition(p: " + std::to_string(p.getPosition()) + ")\n").c_str());
-  endstopDown = p.getPosition();
+  DEBUG((">  FPlanner::p_setEndstopDownPosition(position: " + std::to_string(position) + ")\n").c_str());
+  endstopDown = position;
   endstopDownValid = true;
   DEBUG("<  FPlanner::p_setEndstopDownPosition()\n");
 }

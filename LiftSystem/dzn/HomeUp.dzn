@@ -71,12 +71,12 @@ component HomeUp {
         [ state.IDLE ] on p.moveUp(): { 
             es = endstop.getState();
             if (es == IEndstop.State.INSIDE) {
-                timer.setTimer($Delay(HOMING_MOVING_SLOW_OUT)$);
+                timer.setTimer($HOMING_MOVING_SLOW_OUT$);
                 motor.moveDownSlow();
                 state = State.MOVING_SLOW_OUT;                    
             }
             else if (es == IEndstop.State.OUTSIDE) {
-                timer.setTimer($Delay(HOMING_MOVING_FAST_IN)$);
+                timer.setTimer($HOMING_MOVING_FAST_IN$);
                 motor.moveUpFast();
                 state = State.MOVING_FAST_IN;                    
             }
@@ -84,33 +84,33 @@ component HomeUp {
         [ state.MOVING_FAST_IN ] on endstop.entering(): {
             motor.stop();
             timer.cancelTimer();
-            timer.setTimer($Delay(HOMING_STOPPING_FAST_IN)$);
+            timer.setTimer($HOMING_STOPPING_FAST_IN$);
             state = State.STOPPING_FAST_IN;
         }
         [ state.STOPPING_FAST_IN ] on timer.timerElapsed(): {
-            timer.setTimer($Delay(HOMING_MOVING_SLOW_OUT)$);
+            timer.setTimer($HOMING_MOVING_SLOW_OUT$);
             motor.moveDownSlow();
             state = State.MOVING_SLOW_OUT;
         }
         [ state.MOVING_SLOW_OUT ] on endstop.exiting(): {
             timer.cancelTimer();
-            timer.setTimer($Delay(HOMING_MOVING_EXTRA_OUT)$);
+            timer.setTimer($HOMING_MOVING_EXTRA_OUT$);
             state = State.MOVING_SLOW_EXTRA_OUT;
         }
         [ state.MOVING_SLOW_EXTRA_OUT ] on timer.timerElapsed(): {
             motor.stop();
-            timer.setTimer($Delay(HOMING_STOPPING_SLOW_OUT)$);
+            timer.setTimer($HOMING_STOPPING_SLOW_OUT$);
             state = State.STOPPING_SLOW_OUT;
         }        
         [ state.STOPPING_SLOW_OUT ] on timer.timerElapsed(): {
             motor.moveUpSlow();
-            timer.setTimer($Delay(HOMING_MOVING_SLOW_IN)$);
+            timer.setTimer($HOMING_MOVING_SLOW_IN$);
             state = State.MOVING_SLOW_IN;
         }        
         [ state.MOVING_SLOW_IN ] on endstop.entering(): {
             timer.cancelTimer();
             motor.stop();
-            timer.setTimer($Delay(HOMING_STOPPING_SLOW_IN)$);
+            timer.setTimer($HOMING_STOPPING_SLOW_IN$);
 
             positionSensor.getLastEndstopPosition($&position$);
             planner.setEndstopUpPosition(position);
@@ -126,7 +126,7 @@ component HomeUp {
         // Therefore: fail the move.
         [ state.MOVING_FAST_IN || state.MOVING_SLOW_OUT || state.MOVING_SLOW_IN ] on timer.timerElapsed(): {
             motor.stop();
-            timer.setTimer($Delay(HOMING_FAILING_STOPPING)$);
+            timer.setTimer($HOMING_FAILING_STOPPING$);
             state = State.FAILING_STOPPING;
         }
         [state.FAILING_STOPPING ] on timer.timerElapsed(): {
@@ -138,7 +138,7 @@ component HomeUp {
         [ state.MOVING_FAST_IN || state.MOVING_SLOW_OUT || state.MOVING_SLOW_IN ] on p.abort(): {
             timer.cancelTimer();
             motor.stop();
-            timer.setTimer($Delay(HOMING_ABORTING)$);
+            timer.setTimer($HOMING_ABORTING$);
             state = State.ABORTING;
         }
 

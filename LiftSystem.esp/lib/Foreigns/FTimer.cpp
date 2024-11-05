@@ -24,10 +24,11 @@ FTimer::~FTimer()
     instances.erase(pos);
 };
 
-void FTimer::p_setTimer(Delay delayInS)
+void FTimer::p_setTimer(double delayInS)
 {
-  DEBUG ("> pSetTimer (delayInS = %d)\n", delayInS.getDelay ());
-  delayTimeInMs = (unsigned long)(1000.0 * delayInS.getDelay());
+  DEBUG ("> pSetTimer (delayInS = %d)\n", delayInS);
+  delayTimeInMs = (unsigned long)(1000.0 * delayInS);
+
   startTimeInMs = millis();
   armed = true;
   DEBUG ("< pSetTimer: startTimeInMs = %d\n", startTimeInMs);

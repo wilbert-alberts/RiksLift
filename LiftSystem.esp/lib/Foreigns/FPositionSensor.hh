@@ -12,8 +12,8 @@ public:
   virtual ~FPositionSensor();
   void setEndstopToMonitor(Location location, FEndstop* endstop);
 
-  virtual void p_getCurrentPosition(Position* posInM);
-  virtual void p_getLastEndstopPosition(Position* posInM);
+  virtual void p_getCurrentPosition(double* posInM);
+  virtual void p_getLastEndstopPosition(double* posInM);
 
   static void loop();
 

@@ -45,14 +45,14 @@ info:
 	echo GENSRC_H $(GENSRC_H)
 	echo GENSRC_H $(GENSRC_H)
 
-Types.cc: Types.hh      
-	touch $(OUTDIR)/Types.cc
+# Types.cc: Types.hh      
+# 	touch $(OUTDIR)/Types.cc
 
 # Generate and adapt Types.hh in order to
 # include c++ files defining the types
 Types.hh: Types.dzn
 	$(DZN) code -l c++ -o $(OUTDIR) Types.dzn
-	echo '#include "Position.hh"' >> $(OUTDIR)/Types.hh
+	# echo '#include "Position.hh"' >> $(OUTDIR)/Types.hh
 	echo '#include "Delay.hh"' >> $(OUTDIR)/Types.hh	
 
 %.cc: %.hh
