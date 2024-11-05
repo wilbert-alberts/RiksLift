@@ -44,7 +44,7 @@ void FDestinationSensor::checkArrived(double currentPosition)
   {
     static uint32_t daarnet = 0;
     uint32_t now = millis ();
-    if (now - daarnet > 500) {
+    if (now - daarnet > 1000) {
       daarnet = now;
       DEBUG (">< FDestinationSensor::checkArrived (current pos = %f), dest = %f\n", currentPosition, destination);
     }

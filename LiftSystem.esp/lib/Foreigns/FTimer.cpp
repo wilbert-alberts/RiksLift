@@ -1,6 +1,9 @@
 #include <Arduino.h>
 #include <algorithm>
 
+#define _DEBUG 0
+#include "debug.h"
+
 #include "LiftSystem.hh"
 
 // Collection of pointers to FTimer in order to trigger all of them
@@ -23,13 +26,17 @@ FTimer::~FTimer()
 
 void FTimer::p_setTimer(double delayInS)
 {
+  DEBUG ("> pSetTimer (delayInS = %d)\n", delayInS);
   delayTimeInMs = (unsigned long)(1000.0 * delayInS);
+
   startTimeInMs = millis();
   armed = true;
+  DEBUG ("< pSetTimer: startTimeInMs = %d\n", startTimeInMs);
 }
 
 void FTimer::p_cancelTimer()
 {
+  DEBUG (">< FTimer::p_cancelTimer ((delayInS = %d))\n", delayTimeInMs/1000);
   armed = false;
 }
 
@@ -37,8 +44,11 @@ void FTimer::checkElapsed()
 {
   if (armed)
   {
-    if (millis() - startTimeInMs > delayTimeInMs)
+    uint32_t elapsed = millis () - startTimeInMs;
+    DEBUG (">  FTimer::checkElapsed (): elapsed = %d, delay = %d\n", elapsed, delayTimeInMs);
+    if (elapsed > delayTimeInMs)
     {
+      DEBUG ("   FTimer:checkElapsed: ELAPSED\n");
       armed = false;
       this->p.out.timerElapsed();
     }
